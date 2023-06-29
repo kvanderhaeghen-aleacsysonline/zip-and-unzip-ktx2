@@ -1,0 +1,163 @@
+{
+    "skeleton": {
+        "hash": "6haWivUHBHo",
+        "spine": "4.0-from-4.1.06",
+        "fps": 60,
+        "images": "C:/Work/91_JUN_2022/eBook_Animations/dice/symbol rotation/",
+        "audio": "C:/Work/92_JUL_2022/BastetBoD/Animations/Dice/dices/.."
+    },
+    "bones": [
+        { "name": "selectedsweep" },
+        { "name": "selected", "parent": "selectedsweep", "scaleX": 0.8, "scaleY": 0.8 },
+        { "name": "circle", "parent": "selectedsweep", "scaleX": 0.8, "scaleY": 0.8 },
+        { "name": "glossFX", "parent": "selectedsweep", "x": 29.63, "y": 7.76 }
+    ],
+    "slots": [
+        { "name": "selected", "bone": "selected", "blend": "additive" },
+        { "name": "circle", "bone": "circle", "blend": "additive" },
+        { "name": "FX", "bone": "glossFX", "blend": "screen" }
+    ],
+    "skins": [
+        {
+            "name": "default",
+            "attachments": {
+                "circle": { "selected/die10Selected": { "width": 192, "height": 224 } },
+                "FX": {
+                    "glossFX1": { "x": -42.8, "y": -12.46, "width": 72, "height": 100 },
+                    "glossFX2": { "x": -32.19, "y": -8.23, "width": 80, "height": 100 },
+                    "glossFX3": { "x": -25.84, "y": -8, "width": 70, "height": 101 },
+                    "glossFX4": { "y": 0.5, "width": 46, "height": 100 }
+                },
+                "selected": {
+                    "selected/die10Selected_261": { "width": 192, "height": 224 },
+                    "selected/die10Selected_264": { "width": 192, "height": 224 },
+                    "selected/die10Selected_267": { "width": 192, "height": 224 },
+                    "selected/die10Selected_270": { "width": 192, "height": 224 },
+                    "selected/die10Selected_273": { "width": 192, "height": 224 },
+                    "selected/die10Selected_276": { "width": 192, "height": 224 },
+                    "selected/die10Selected_279": { "width": 192, "height": 224 },
+                    "selected/die10Selected_282": { "width": 192, "height": 224 },
+                    "selected/die10Selected_285": { "width": 192, "height": 224 },
+                    "selected/die10Selected_288": { "width": 192, "height": 224 },
+                    "selected/die10Selected_291": { "width": 192, "height": 224 }
+                }
+            }
+        }
+    ],
+    "animations": {
+        "die10SelectedSweep": {
+            "slots": {
+                "circle": {
+                    "attachment": [
+                        { "time": 0.0167, "name": "selected/die10Selected" },
+                        { "time": 0.4, "name": null }
+                    ]
+                },
+                "selected": {
+                    "attachment": [
+                        { "name": "selected/die10Selected_261" },
+                        { "time": 0.0333, "name": "selected/die10Selected_264" },
+                        { "time": 0.0667, "name": "selected/die10Selected_267" },
+                        { "time": 0.1, "name": "selected/die10Selected_270" },
+                        { "time": 0.1333, "name": "selected/die10Selected_273" },
+                        { "time": 0.1667, "name": "selected/die10Selected_276" },
+                        { "time": 0.2, "name": "selected/die10Selected_279" },
+                        { "time": 0.2333, "name": "selected/die10Selected_282" },
+                        { "time": 0.2667, "name": "selected/die10Selected_285" },
+                        { "time": 0.3, "name": "selected/die10Selected_288" },
+                        { "time": 0.3333, "name": "selected/die10Selected_291" },
+                        { "time": 0.3667, "name": "selected/die10Selected_261" },
+                        { "time": 0.4, "name": null }
+                    ]
+                }
+            }
+        },
+        "die10Trigger": {
+            "slots": {
+                "FX": {
+                    "attachment": [
+                        { "time": 0.2167, "name": "glossFX1" },
+                        { "time": 0.2833, "name": "glossFX2" },
+                        { "time": 0.35, "name": "glossFX3" },
+                        { "time": 0.4, "name": "glossFX4" },
+                        { "time": 0.45, "name": null }
+                    ]
+                }
+            },
+            "bones": {
+                "glossFX": {
+                    "rotate": [
+                        { "time": 0.2833 },
+                        { "time": 0.3, "value": -6.9 },
+                        { "time": 0.3167, "value": -9.75 },
+                        { "time": 0.3333, "value": -11.25 },
+                        { "time": 0.35 },
+                        { "time": 0.3833, "value": -3.83 },
+                        { "time": 0.4, "value": -2.92 },
+                        { "time": 0.4333, "value": 4.28 },
+                        { "time": 0.45 }
+                    ],
+                    "translate": [
+                        { "time": 0.2167 },
+                        { "time": 0.2667, "x": 12.55, "y": 3.81 },
+                        { "time": 0.2833 },
+                        { "time": 0.3, "x": 3.3, "y": -0.64 },
+                        { "time": 0.3167, "x": 5.97, "y": -2 },
+                        { "time": 0.3333, "x": 8.78, "y": -2.24 },
+                        { "time": 0.35, "y": 2.08 },
+                        { "time": 0.3833, "x": 1.52, "y": -4.47 },
+                        { "time": 0.4, "x": -3.43, "y": -4.3 },
+                        { "time": 0.4333, "x": 3.13, "y": -2.08 },
+                        { "time": 0.45 }
+                    ],
+                    "scale": [
+                        { "time": 0.2167 },
+                        { "time": 0.2667, "x": 1.071, "y": 1.06 },
+                        { "time": 0.2833 },
+                        { "time": 0.3, "x": 1.019, "y": 1.048 },
+                        { "time": 0.3167, "x": 1.043, "y": 1.063 },
+                        { "time": 0.3333, "x": 1.019, "y": 1.038 },
+                        { "time": 0.35, "y": 1.056 },
+                        { "time": 0.3833, "x": 0.704, "y": 0.933 },
+                        { "time": 0.4, "x": 0.801, "y": 0.85 },
+                        { "time": 0.4333, "x": 0.404, "y": 0.707 },
+                        { "time": 0.45 }
+                    ],
+                    "shear": [{ "time": 0.35 }, { "time": 0.3833, "x": -20.02 }, { "time": 0.4, "x": -9.68 }]
+                }
+            }
+        },
+        "die10Winline": {
+            "slots": {
+                "circle": { "attachment": [{ "time": 0.0167, "name": "selected/die10Selected" }] },
+                "selected": {
+                    "rgba": [
+                        { "color": "eb8e0fff" },
+                        { "time": 0.1333, "color": "fffdf8ff" },
+                        { "time": 0.3167, "color": "ce801bff" },
+                        { "time": 0.4333, "color": "ffffffff" }
+                    ],
+                    "attachment": [
+                        { "name": "selected/die10Selected_261" },
+                        { "time": 0.0167, "name": "selected/die10Selected_264" },
+                        { "time": 0.05, "name": "selected/die10Selected_267" },
+                        { "time": 0.0833, "name": "selected/die10Selected_270" },
+                        { "time": 0.1167, "name": "selected/die10Selected_273" },
+                        { "time": 0.1667, "name": "selected/die10Selected_276" },
+                        { "time": 0.2333, "name": "selected/die10Selected_279" },
+                        { "time": 0.2833, "name": "selected/die10Selected_282" },
+                        { "time": 0.3333, "name": "selected/die10Selected_285" },
+                        { "time": 0.3667, "name": "selected/die10Selected_288" },
+                        { "time": 0.4, "name": "selected/die10Selected_291" },
+                        { "time": 0.4333, "name": "selected/die10Selected_261" },
+                        { "time": 0.45, "name": null }
+                    ]
+                }
+            },
+            "bones": {
+                "selected": { "rotate": [{ "value": 25.65 }], "scale": [{ "time": 0.2833 }, { "time": 0.3333, "x": 0.887 }, { "time": 0.35 }] },
+                "circle": { "translate": [{ "time": 0.0167, "x": -0.75, "y": -1.87 }] }
+            }
+        }
+    }
+}

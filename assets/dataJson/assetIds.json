@@ -1,0 +1,202 @@
+{
+    "carousel": {
+        "carouselAnimation": "carousel"
+    },
+    "backgrounds": {
+        "normal": {
+            "back": "backgroundWaterMainGame",
+            "front": "backgroundMainAnim"
+        },
+        "feature": {
+            "back": "backgroundBonusGame",
+            "skyBox": "skyBonusBackground"
+        },
+        "transition": {
+            "back": "groundLayers"
+        }
+    },
+    "buffer": {
+        "frame": { "asset": "main", "frame": "bufferFrame" }
+    },
+    "dice": {
+        "symbols": {
+            "1": "die1",
+            "2": "die2",
+            "3": "die3",
+            "4": "die4",
+            "5": "die5",
+            "6": "die6",
+            "7": "die7",
+            "8": "die8",
+            "9": "die9",
+            "10": "die10"
+        },
+        "symbolsLarge": {
+            "1": { "asset": "diceLarge", "frame": "die1" },
+            "2": { "asset": "diceLarge", "frame": "die2" },
+            "3": { "asset": "diceLarge", "frame": "die3" },
+            "4": { "asset": "diceLarge", "frame": "die4" },
+            "5": { "asset": "diceLarge", "frame": "die5" },
+            "6": { "asset": "diceLarge", "frame": "die6" },
+            "7": { "asset": "diceLarge", "frame": "die7" },
+            "8": { "asset": "diceLarge", "frame": "die8" },
+            "9": { "asset": "diceLarge", "frame": "die9" }
+        },
+        "points": { "asset": "main", "frame": "points" },
+        "gridSymbolsAnim": {
+            "assetId": "gridSymbols",
+            "slotData": {
+                "backSlotName": "back",
+                "dieSlotName": "dice"
+            }
+        },
+        "die10Anim": "die10Anim",
+        "sweepAnim": {
+            "assetId": "sweeps",
+            "die10SlotName": "die10Symbol"
+        }
+    },
+    "winGrid": {
+        "spine": {
+            "asset": "winGrid",
+            "winline": "symbolWinline",
+            "slots": {
+                "points": "circlePoints",
+                "featureRounds": "orb"
+            }
+        },
+        "alike9": {
+            "glow": "nineAlikeWheel"
+        }
+    },
+    "wheel": {
+        "wheelAnimation": "9Alike",
+        "textSlots": ["prize1", "prize2", "prize3", "prize4", "prize5", "prize6"],
+        "wheelBone": "wheel",
+        "winSlot": "wheelPoints",
+        "currentPointsSlot": "gridPoints",
+        "particleScarabPlayField": "scarabPlayfield"
+    },
+    "grids": {
+        "frame": {
+            "normal": "gridMainGame",
+            "feature": "gridBonusGame"
+        },
+        "gridBackPlates": {
+            "asset": "gridBackPlates",
+            "plates": [
+                [
+                    { "asset": "gridBackPlates", "frame": "grid0_0" },
+                    { "asset": "gridBackPlates", "frame": "grid0_1" },
+                    { "asset": "gridBackPlates", "frame": "grid0_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid1_0" },
+                    { "asset": "gridBackPlates", "frame": "grid1_1" },
+                    { "asset": "gridBackPlates", "frame": "grid1_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid2_0" },
+                    { "asset": "gridBackPlates", "frame": "grid2_1" },
+                    { "asset": "gridBackPlates", "frame": "grid2_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid3_0" },
+                    { "asset": "gridBackPlates", "frame": "grid3_1" },
+                    { "asset": "gridBackPlates", "frame": "grid3_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid4_0" },
+                    { "asset": "gridBackPlates", "frame": "grid4_1" },
+                    { "asset": "gridBackPlates", "frame": "grid4_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid5_0" },
+                    { "asset": "gridBackPlates", "frame": "grid5_1" },
+                    { "asset": "gridBackPlates", "frame": "grid5_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid6_0" },
+                    { "asset": "gridBackPlates", "frame": "grid6_1" },
+                    { "asset": "gridBackPlates", "frame": "grid6_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid7_0" },
+                    { "asset": "gridBackPlates", "frame": "grid7_1" },
+                    { "asset": "gridBackPlates", "frame": "grid7_2" }
+                ],
+                [
+                    { "asset": "gridBackPlates", "frame": "grid8_0" },
+                    { "asset": "gridBackPlates", "frame": "grid8_1" },
+                    { "asset": "gridBackPlates", "frame": "grid8_2" }
+                ]
+            ]
+        },
+        "gridPoints": { "asset": "main", "frame": "gridWonOverlay" },
+        "darkOverlays": [
+            { "asset": "main", "frame": "darkOverlayGrid" },
+            { "asset": "main", "frame": "darkOverlayGrid" },
+            { "asset": "main", "frame": "darkOverlayGrid" }
+        ]
+    },
+    "score": {
+        "frame": { "asset": "main", "frame": "score" },
+        "buttonClose": { "asset": "main", "frame": "close" },
+        "buttonExpand": { "asset": "main", "frame": "expand" },
+        "book": { "asset": "main", "frame": "bookIconNonHighlighted" },
+        "bookHighLighted": { "asset": "main", "frame": "bookIconHighlighted" }
+    },
+    "pointsModifiers": {
+        "set2": [
+            { "asset": "main", "frame": "set2Unlit" },
+            { "asset": "main", "frame": "set2Lit" }
+        ],
+        "set3": [
+            { "asset": "main", "frame": "set3Unlit" },
+            { "asset": "main", "frame": "set3Lit" }
+        ],
+        "alike9": [
+            { "asset": "main", "frame": "alike9Unlit" },
+            { "asset": "main", "frame": "alike9Lit" }
+        ]
+    },
+    "prizeTable": {
+        "frame": { "asset": "main", "frame": "prizeTable" },
+        "bookIcon": { "asset": "main", "frame": "bookIconHighlighted" }
+    },
+
+    "coinburst": {
+        "changeStake": { "asset": "main", "frame": "changeStake" },
+        "lowBalance": { "asset": "main", "frame": "balanceTooLow" },
+        "spineCoinburst": {
+            "asset": "coinburst",
+            "skins": ["bonusRound", "bonusRounds"],
+            "slots": {
+                "points": "frameCoinburst",
+                "featureRounds": "orb"
+            }
+        }
+    },
+    "feature": {
+        "book3D": {
+            "asset": "book3D",
+            "dieMesh": "M_Logo"
+        }
+    },
+    "characters": {
+        "spine": {
+            "bastet": "bastet",
+            "slots": {
+                "featureRounds": "orb"
+            }
+        }
+    },
+    "splashScreen": {
+        "normal": {
+            "back": "splashScreenNormal"
+        },
+        "feature": {
+            "back": "splashScreenBonus"
+        }
+    }
+}

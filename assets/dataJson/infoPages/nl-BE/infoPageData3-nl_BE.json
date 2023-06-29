@@ -1,0 +1,168 @@
+{
+    "elements": [
+        {
+            "type": "header",
+            "contentPath": "header.gameInfo",
+            "size": { "x": "90%", "y": "5%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.h1",
+            "position": { "y": "5%" },
+            "size": { "x": "25%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.t1",
+            "position": { "y": "10%" },
+            "size": { "x": "25%", "y": "22%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "-8%", "y": "32%" },
+            "frameId": "page3Bonuswinline",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "40%", "y": "40%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.h2",
+            "position": { "x": "30%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.t2",
+            "position": { "x": "30%", "y": "10%" },
+            "size": { "x": "30%", "y": "14%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "30%", "y": "29%" },
+            "frameId": "page3Scatters",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "30%", "y": "40%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.h3",
+            "position": { "x": "70%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.t3",
+            "align": "center",
+            "position": { "x": "63%", "y": "15%" },
+            "size": { "x": "12%", "y": "12%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "75%", "y": "12%" },
+            "frameId": "page3MultiplierX2",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "20%", "y": "15%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.t4",
+            "align": "center",
+            "position": { "x": "63%", "y": "30%" },
+            "size": { "x": "12%", "y": "12%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "75%", "y": "27%" },
+            "frameId": "page3MultiplierX3",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "20%", "y": "15%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.t5",
+            "align": "center",
+            "position": { "x": "61.5%", "y": "45%" },
+            "size": { "x": "15%", "y": "20%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "75%", "y": "47%" },
+            "frameId": "page3Multiplier9Alike",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "20%", "y": "15%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.stake",
+            "align": "center",
+            "position": { "x": "61%", "y": "69%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.minPrize",
+            "align": "center",
+            "position": { "x": "71%", "y": "69%" },
+            "size": { "x": "8%", "y": "8%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p3.maxPrize",
+            "align": "center",
+            "position": { "x": "81%", "y": "69%" },
+            "size": { "x": "8%", "y": "8%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n1",
+            "align": "center",
+            "position": { "x": "61%", "y": "74%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n2",
+            "align": "center",
+            "position": { "x": "71%", "y": "74%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n3",
+            "align": "center",
+            "position": { "x": "81%", "y": "74%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n4",
+            "align": "center",
+            "position": { "x": "61%", "y": "79%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n5",
+            "align": "center",
+            "position": { "x": "71%", "y": "79%" },
+            "size": { "x": "5%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p3.n6",
+            "align": "center",
+            "position": { "x": "81%", "y": "79%" },
+            "size": { "x": "5%", "y": "5%" }
+        }
+    ]
+}

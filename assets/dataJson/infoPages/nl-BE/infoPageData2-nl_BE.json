@@ -1,0 +1,96 @@
+{
+    "elements": [
+        {
+            "type": "header",
+            "contentPath": "header.gameInfo",
+            "size": { "x": "90%", "y": "5%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p2.h1",
+            "position": { "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t1",
+            "position": { "y": "10%" },
+            "size": { "x": "30%", "y": "12%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t2",
+            "position": { "y": "20%" },
+            "size": { "x": "30%", "y": "16%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t3",
+            "position": { "y": "38%" },
+            "size": { "x": "30%", "y": "16%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "-2%", "y": "57%" },
+            "frameId": "page2Grids",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "34%", "y": "68%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p2.h3",
+            "position": { "x": "33%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t4",
+            "position": { "x": "33%", "y": "10%" },
+            "size": { "x": "30%", "y": "16%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "33%", "y": "30%" },
+            "frameId": "page2Points",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "30%", "y": "60%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p2.h3",
+            "position": { "x": "65%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t5",
+            "position": { "x": "65%", "y": "10%" },
+            "size": { "x": "30%", "y": "20%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "65%", "y": "36%" },
+            "frameId": "page2Prizes",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "30%", "y": "40%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p2.h4",
+            "position": { "x": "65%", "y": "73%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p2.t6",
+            "position": { "x": "65%", "y": "78%" },
+            "size": { "x": "30%", "y": "18%" }
+        }
+    ]
+}

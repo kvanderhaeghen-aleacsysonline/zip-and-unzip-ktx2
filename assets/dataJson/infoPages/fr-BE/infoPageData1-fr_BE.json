@@ -1,0 +1,79 @@
+{
+    "elements": [
+        {
+            "type": "header",
+            "contentPath": "header.gameInfo",
+            "size": { "x": "90%", "y": "5%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p1.h1",
+            "position": { "y": "5%" },
+            "size": { "x": "90%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p1.t1",
+            "position": { "y": "10%" },
+            "size": { "x": "90%", "y": "14%" }
+        },
+        {
+            "type": "group",
+            "position": { "x": "0%", "y": "25%" },
+            "size": { "x": "50%", "y": "56%" },
+            "content": [
+                {
+                    "type": "header",
+                    "contentPath": "p1.h2",
+                    "align": "center",
+                    "size": { "x": "100%", "y": "7%" }
+                },
+                {
+                    "type": "texture",
+                    "position": { "x": "10%", "y": "10%" },
+                    "frameId": "page1MainGame",
+                    "assetId": "info",
+                    "manifestId": "default",
+                    "align": "center",
+                    "size": { "x": "80%", "y": "90%" }
+                },
+                {
+                    "type": "text",
+                    "contentPath": "p1.t2",
+                    "position": { "x": "10%", "y": "100%" },
+                    "align": "center",
+                    "size": { "x": "80%", "y": "20%" }
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "position": { "x": "45%", "y": "25%" },
+            "size": { "x": "50%", "y": "56%" },
+            "content": [
+                {
+                    "type": "header",
+                    "contentPath": "p1.h3",
+                    "align": "center",
+                    "size": { "x": "100%", "y": "7%" }
+                },
+                {
+                    "type": "texture",
+                    "position": { "x": "10%", "y": "10%" },
+                    "frameId": "page1BonusGame",
+                    "assetId": "info",
+                    "manifestId": "default",
+                    "align": "center",
+                    "size": { "x": "80%", "y": "90%" }
+                },
+                {
+                    "type": "text",
+                    "contentPath": "p1.t3",
+                    "position": { "x": "10%", "y": "100%" },
+                    "align": "center",
+                    "size": { "x": "80%", "y": "30%" }
+                }
+            ]
+        }
+    ]
+}

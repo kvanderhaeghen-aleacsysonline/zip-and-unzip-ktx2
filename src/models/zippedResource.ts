@@ -1,13 +1,14 @@
 import * as fflate from 'fflate';
+import { Howl } from 'howler';
+import * as Pixi from 'Pixi.js';
 
 type CompressionLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export class ZippedResource {
-    private zippedInfo: Uint8Array;
+    private zipData: Uint8Array;
     private compressionLvl: CompressionLevel;
-    private zipData: fflate.Zippable;
-
-    private resourceMap: Map<string, object>;
+    private zipInfo: fflate.Zippable;
+    private unzipped?: fflate.Unzipped;
 
     uint8ToBase64 = (arr: Uint8Array): string =>
         btoa(
@@ -19,12 +20,12 @@ export class ZippedResource {
 
     public constructor(compressionLevel: CompressionLevel = 6) {
         this.compressionLvl = compressionLevel;
-        this.zipData = {};
-        this.resourceMap = new Map<string, object>();
+        this.zipInfo = {};
     }
 
     public donwload(): void {
-        const blob = new Blob([this.zippedInfo], { type: 'application/plain' });
+        this.zipUp();
+        const blob = new Blob([this.zipData], { type: 'application/plain' });
         const blobUrl = URL.createObjectURL(blob);
         console.log('Generated Blob; object URL: %s', blobUrl);
 
@@ -35,7 +36,6 @@ export class ZippedResource {
             document.body.appendChild(a);
             a.style.display = 'none';
             a.click();
-            // a.remove();
         };
         downloadURL(blobUrl, 'test');
     }
@@ -44,79 +44,55 @@ export class ZippedResource {
         const buffer = await fetch(path).then((res) => res.arrayBuffer());
         const pathArr = path.split('/');
         const name = pathArr[pathArr.length - 1];
-        this.zipData[name] = {};
-        this.zipData[name] = [
+        this.zipInfo[name] = {};
+        this.zipInfo[name] = [
             new Uint8Array(buffer),
             {
                 level: this.compressionLvl,
                 mem: 12,
             },
         ];
-        this.zippedInfo = fflate.zipSync(this.zipData);
+    }
+
+    public zipUp(): void {
+        this.setZipData(fflate.zipSync(this.zipInfo));
     }
 
     public setZipData(data: Uint8Array): void {
-        this.zippedInfo = data;
+        this.zipData = data;
     }
 
-    public async unzipResource(name: string): Promise<Uint8Array | undefined> {
-        let orgSize = 0;
-        let size = 0;
-        const unzipped = fflate.unzipSync(this.zippedInfo, {
-            filter(file) {
-                orgSize += file.originalSize;
-                size += file.size;
-                return file.name === name;
-            },
-        });
-        // console.log(orgSize / 1024 / 1024, size / 1024 / 1024);
-        return unzipped[name];
-    }
-
-    public async getTexture(name: string, extensions: string = '.png'): Promise<HTMLImageElement | undefined> {
-        const fullname = name + extensions;
-        const element = this.hasElement<HTMLImageElement>(fullname);
-        if (element !== undefined) {
-            return element;
-        } else {
-            const image = document.createElement('img');
-            const byteArr = await this.unzipResource(fullname);
-            if (byteArr === undefined) return;
-            const byteStr = this.uint8ToBase64(byteArr!);
-            // const byteStr = fflate.strFromU8(byteArr!);
-            image.src = `data:image/png;base64,${byteStr}`;
-            this.resourceMap.set(fullname, image);
-            document.body.appendChild(image);
-            return image;
+    public unzipResource(name: string): Uint8Array | undefined {
+        if (this.unzipped === undefined) {
+            console.error('no unzipped yet');
+            this.unzipped = fflate.unzipSync(this.zipData);
         }
+        return this.unzipped[name];
     }
 
-    public async getAudio(name: string, extensions: string = '.mp3'): Promise<HTMLAudioElement> {
-        const fullname = name + extensions;
-        const element = this.hasElement<HTMLAudioElement>(fullname);
-        if (element !== undefined) {
-            const audioElement = this.resourceMap.get(fullname) as HTMLAudioElement;
-            audioElement.pause();
-            audioElement.currentTime = 0;
-            return audioElement;
-        } else {
-            const audioResource = await this.unzipResource(fullname);
-            const newAudio = new Audio();
-            const blob = new Blob([audioResource!], { type: 'audio/mp3' });
-            newAudio.src = window.URL.createObjectURL(blob);
-            newAudio.muted = false;
-            newAudio.autoplay = true;
+    public getPixiTexture(path: string): Pixi.Sprite {
+        const pathArray = path.split('/');
+        const fullName = pathArray[pathArray.length - 1];
 
-            this.resourceMap.set(fullname, newAudio);
-            return newAudio;
-        }
+        const image = document.createElement('img');
+        const byteArr = this.unzipResource(fullName);
+        const byteStr = this.uint8ToBase64(byteArr!);
+        image.src = `data:image/png;base64,${byteStr}`;
+
+        const texture = Pixi.Texture.from(image);
+        return new Pixi.Sprite(texture);
     }
 
-    private hasElement<T>(name: string): T | undefined {
-        if (this.resourceMap.has(name)) {
-            return this.resourceMap.get(name) as T;
-        } else {
-            return undefined;
-        }
+    public getAudio(path: string): Howl {
+        const pathArray = path.split('/');
+        const fullName = pathArray[pathArray.length - 1];
+        const audioResource = this.unzipResource(fullName);
+
+        const properties = fullName.split('.');
+
+        const blob = new Blob([audioResource!], { type: 'audio/mp3' });
+        const uri = window.URL.createObjectURL(blob);
+        const howlSound = new Howl({ src: uri, autoplay: false, loop: false, volume: 0.5, format: properties[1] });
+        return howlSound;
     }
 }

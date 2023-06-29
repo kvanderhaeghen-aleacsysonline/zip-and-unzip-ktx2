@@ -1,0 +1,12 @@
+buffer.tex1.png
+size:512,512
+filter:Linear,Linear
+pma:true
+borderDie
+bounds:77,178,84,84
+shineDie
+bounds:2,189,73,73
+twinkleSpark
+bounds:163,164,98,99
+offsets:2,4,102,105
+rotate:90

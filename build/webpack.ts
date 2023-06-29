@@ -25,7 +25,7 @@ if (useLocalNetworkAddress) {
                 }
                 nonLocalInterfaces[inet].push(address);
                 if (address.address.includes('192.168')) {
-                    if(address.address !== '192.168.0.1') {
+                    if (address.address !== '192.168.0.1') {
                         myNetworkAddress = address.address;
                     }
                 }
@@ -34,7 +34,6 @@ if (useLocalNetworkAddress) {
     }
     // console.log(nonLocalInterfaces);
 }
-
 
 const config: Webpack.Configuration = {
     devtool: 'source-map',
@@ -75,9 +74,7 @@ const config: Webpack.Configuration = {
             filename: 'index.html',
         }),
         new CopyPlugin({
-            patterns: [
-                { from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPath, 'assets') },
-            ],
+            patterns: [{ from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPath, 'assets') }],
         }),
         new nodePolyfillPlugin(),
     ],

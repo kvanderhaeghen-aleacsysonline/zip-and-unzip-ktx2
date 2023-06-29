@@ -1,0 +1,311 @@
+{
+    "buffer": {
+        "clickToStart": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 36,
+                "wordWrap": true,
+                "wordWrapWidth": 100,
+                "align": "center"
+            }
+        }
+    },
+    "grid": {
+        "points": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 42,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "featureRounds": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 36,
+                "padding": 18,
+                "align": "center"
+            }
+        }
+    },
+    "dice": {
+        "points": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 25,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "featureRounds": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 34,
+                "padding": 18,
+                "stroke": "#54558e",
+                "strokeThickness": 8,
+                "align": "center"
+            }
+        }
+    },
+    "wheel": {
+        "ringElements": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#000000",
+                "fontSize": 25
+            }
+        },
+        "ringElementWon": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 25
+            }
+        },
+        "centerValueCurrent": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 40
+            }
+        },
+        "centerValueWon": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 50
+            }
+        }
+    },
+    "score": {
+        "currentPoints": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 34,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "currentPointsPts": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 20,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "points": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 22,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "pointsHighlighted": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 30,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "prize": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 22,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "prizeHighlighted": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 30,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "prizeSmall": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 16,
+                "padding": 18,
+                "align": "center"
+            }
+        },
+        "prizeHighlightedSmall": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 22,
+                "padding": 18,
+                "align": "center"
+            }
+        }
+    },
+    "prizeTable": {
+        "points": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 30,
+                "padding": 18,
+                "align": "right"
+            }
+        },
+        "prizes": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 24,
+                "padding": 16,
+                "align": "left"
+            }
+        },
+        "pts": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 18,
+                "padding": 18,
+                "align": "left"
+            }
+        }
+    },
+    "coinburst": {
+        "won": {
+            "won": {
+                "id": "bastetForton",
+                "style": {
+                    "letterSpacing": 0,
+                    "fill": "#ffffff",
+                    "fontSize": 150
+                }
+            },
+            "youWon": {
+                "id": "bastetForton",
+                "style": {
+                    "letterSpacing": 0,
+                    "fill": "#ffffff",
+                    "fontSize": 110
+                }
+            },
+            "featureRounds": {
+                "id": "bastetForton",
+                "style": {
+                    "letterSpacing": 0,
+                    "fill": "#ffffff",
+                    "fontSize": 60
+                }
+            }
+        }
+    },
+    "feature": {
+        "amount": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 45,
+                "align": "center"
+            }
+        }
+    },
+    "splashScreen": {
+        "header1": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 40,
+                "align": "center",
+                "wordWrap": true,
+                "wordWrapWidth": 380
+            }
+        },
+        "header2": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ffffff",
+                "fontSize": 40,
+                "align": "center",
+                "wordWrap": true,
+                "wordWrapWidth": 600
+            }
+        },
+        "text1": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 32,
+                "align": "center",
+                "wordWrap": true,
+                "wordWrapWidth": 360
+            }
+        },
+        "text2": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 30,
+                "align": "center",
+                "wordWrap": true,
+                "wordWrapWidth": 500
+            }
+        },
+        "play": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#54c7c2",
+                "fontSize": 50
+            }
+        },
+        "dontShow": {
+            "id": "bastetForton",
+            "style": {
+                "letterSpacing": 0,
+                "fill": "#ba7c25",
+                "fontStyle": "italic",
+                "fontSize": 20
+            }
+        }
+    }
+}

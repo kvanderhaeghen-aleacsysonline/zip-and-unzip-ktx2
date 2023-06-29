@@ -1,0 +1,317 @@
+{
+    "gameModeSwitch": {
+        "moveDown1": [
+            {
+                "t": 0,
+                "data": {
+                    "y2D": 0,
+                    "y3D": 0
+                },
+                "easing": "easeInOutQuad"
+            },
+            {
+                "t": 1500,
+                "data": {
+                    "y2D": 1880,
+                    "y3D": 1880
+                },
+                "easing": "easeInOutQuad"
+            }
+        ],
+        "moveDown2": [
+            {
+                "t": 0,
+                "data": {
+                    "y2D": -1880,
+                    "y3D": -1880
+                },
+                "easing": "easeInOutQuad"
+            },
+            {
+                "t": 1500,
+                "data": {
+                    "y2D": 0,
+                    "y3D": 0
+                },
+                "easing": "easeInOutQuad"
+            }
+        ],
+        "moveUp1": [
+            {
+                "t": 0,
+                "data": {
+                    "y2D": 0,
+                    "y3D": 0
+                },
+                "easing": "easeInOutQuad"
+            },
+            {
+                "t": 1500,
+                "data": {
+                    "y2D": -1880,
+                    "y3D": -1880
+                },
+                "easing": "easeInOutQuad"
+            }
+        ],
+        "moveUp2": [
+            {
+                "t": 0,
+                "data": {
+                    "y2D": 1880,
+                    "y3D": 1880
+                },
+                "easing": "easeInOutQuad"
+            },
+            {
+                "t": 1500,
+                "data": {
+                    "y2D": 0,
+                    "y3D": 0
+                },
+                "easing": "easeInOutQuad"
+            }
+        ]
+    },
+    "creditsIncrease": [
+        {
+            "t": 0,
+            "data": {
+                "val": 0
+            },
+            "easing": "linear"
+        },
+        {
+            "t": 600,
+            "data": {
+                "val": 0
+            },
+            "easing": "linear"
+        }
+    ],
+    "buffer": {
+        "die10": {
+            "animDelay": 150,
+            "hintDelay": 0
+        }
+    },
+    "book3D": {
+        "moveIn": [
+            {
+                "t": 0,
+                "data": {
+                    "y": 0
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 300,
+                "data": {
+                    "y": 0
+                },
+                "easing": "linear"
+            }
+        ]
+    },
+    "dice": {
+        "drop": [
+            {
+                "t": 0,
+                "data": {
+                    "y": -500
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 100,
+                "data": {
+                    "y": 0
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 175,
+                "data": {
+                    "y": -30
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 200,
+                "data": {
+                    "y": 0
+                },
+                "easing": "linear"
+            }
+        ],
+        "dropDelay": 25,
+        "hint": [
+            {
+                "t": 0,
+                "data": {
+                    "visible": 0
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 150,
+                "data": {
+                    "visible": 1
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 300,
+                "data": {
+                    "visible": 0
+                },
+                "easing": "linear"
+            }
+        ],
+        "win": [
+            {
+                "t": 0,
+                "data": {
+                    "visible": 0
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 75,
+                "data": {
+                    "visible": 1
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 150,
+                "data": {
+                    "visible": 0
+                },
+                "easing": "linear"
+            }
+        ],
+        "dieAnimNames": {
+            "flip": "flip",
+            "setToDie": "setToDieFrame",
+            "setToBack": "setToBackFrame"
+        },
+        "die10AnimNames": {
+            "bufferHint": "die10BufferHint",
+            "idle": "die10Idle",
+            "scatterHint": "die10Idle2",
+            "winlineHint": "die10Tension2",
+            "trigger": "die10Trigger",
+            "winline": "die10Winline"
+        },
+        "sweep": {
+            "select": "die10SelectedSweep"
+        }
+    },
+    "winGrid": {
+        "gridPoints": {
+            "normal": "winGridAnimation",
+            "withFeature": "winGridAnimationWithBonus",
+            "onlyFeature": "winGridAnimationOnlyBonus"
+        },
+        "winline": {
+            "normal": "winGridAnimation",
+            "alike9": "winGrid9Alike"
+        },
+        "alike9": {
+            "active": "9alikeActive",
+            "glow": "9AlikeGlow"
+        }
+    },
+    "wheel": {
+        "wheelScaleAnim": {
+            "in": { "data": [1, 2], "t": 700 },
+            "back": { "data": [2, 1], "t": 300 },
+            "waitTime": 3800,
+            "preWaitTime": 200
+        },
+        "wheelMoveAnim": {
+            "offsets": [
+                { "x": 460, "y": 250 },
+                { "x": 0, "y": 250 },
+                { "x": -460, "y": 250 }
+            ]
+        },
+        "valueCount": {
+            "wait": 3750,
+            "t": 750
+        },
+        "prize1ColorChange": {
+            "wait": 3800
+        }
+    },
+    "coinburst": {
+        "wonValue": [
+            {
+                "t": 0,
+                "data": {
+                    "v": 0
+                },
+                "easing": "linear"
+            },
+            {
+                "t": 100,
+                "data": {
+                    "v": 0
+                },
+                "easing": "linear"
+            }
+        ],
+        "main": {
+            "intro": "coinburstRegular",
+            "loop": "coinburstRegularLoop"
+        },
+        "bonus": {
+            "intro": "coinburstBonusRounds",
+            "loop": "coinburstBonusRoundsLoop"
+        }
+    },
+    "carousel": {
+        "slideTime": 3
+    },
+    "scatterWon": {
+        "loops": 4,
+        "animDelay": 400,
+        "modifier": 100,
+        "endDelay": 2000
+    },
+    "feature": {
+        "book3D": {
+            "open": {
+                "id": "open",
+                "loop": 1,
+                "timeScale": 1,
+                "clampOnEnd": true
+            },
+            "pageflip": {
+                "id": "pageflip",
+                "loop": 1,
+                "timeScale": 1,
+                "clampOnEnd": true
+            },
+            "pageInsert": {
+                "id": "pageInsert",
+                "loop": 1,
+                "timeScale": 1,
+                "clampOnEnd": true
+            },
+            "close": {
+                "id": "close",
+                "loop": 1,
+                "timeScale": 1,
+                "clampOnEnd": true
+            },
+            "idle": {
+                "id": "idle",
+                "loop": 1,
+                "timeScale": 1,
+                "clampOnEnd": true
+            }
+        }
+    }
+}

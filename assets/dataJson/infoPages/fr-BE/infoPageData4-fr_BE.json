@@ -1,0 +1,72 @@
+{
+    "elements": [
+        {
+            "type": "header",
+            "contentPath": "header.gameInfo",
+            "size": { "x": "90%", "y": "5%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p4.h1",
+            "position": { "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p4.t1",
+            "position": { "y": "10%" },
+            "size": { "x": "30%", "y": "24%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "9%", "y": "35%" },
+            "frameId": "page4Bastet",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "left",
+            "size": { "x": "40%", "y": "80%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p4.h2",
+            "position": { "x": "33%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p4.t2",
+            "position": { "x": "33%", "y": "10%" },
+            "size": { "x": "30%", "y": "26%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "33%", "y": "40%" },
+            "frameId": "page4BookOfDice",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "30%", "y": "60%" }
+        },
+        {
+            "type": "header",
+            "contentPath": "p4.h3",
+            "position": { "x": "65%", "y": "5%" },
+            "size": { "x": "30%", "y": "5%" }
+        },
+        {
+            "type": "text",
+            "contentPath": "p4.t3",
+            "position": { "x": "65%", "y": "10%" },
+            "size": { "x": "30%", "y": "18%" }
+        },
+        {
+            "type": "texture",
+            "position": { "x": "65%", "y": "40%" },
+            "frameId": "page49AlikeWheel",
+            "assetId": "info",
+            "manifestId": "default",
+            "align": "center",
+            "size": { "x": "30%", "y": "40%" }
+        }
+    ]
+}

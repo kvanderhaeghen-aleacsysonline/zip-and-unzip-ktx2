@@ -1,0 +1,14 @@
+symbolWinline.tex1.png
+size:512,512
+filter:Linear,Linear
+pma:true
+9alike
+bounds:2,134,129,123
+borderDie
+bounds:133,132,125,124
+rotate:90
+shineDie
+bounds:2,7,125,124
+rotate:90
+winline9Alike
+bounds:128,7,129,123
