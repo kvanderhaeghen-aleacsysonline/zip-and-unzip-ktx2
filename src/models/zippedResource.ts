@@ -55,6 +55,10 @@ export class ZippedResource {
         this.zippedInfo = fflate.zipSync(this.zipData);
     }
 
+    public setZipData(data: Uint8Array): void {
+        this.zippedInfo = data;
+    }
+
     public async unzipResource(name: string): Promise<Uint8Array | undefined> {
         let orgSize = 0;
         let size = 0;
