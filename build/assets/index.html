@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple Project</title>
+        <script>javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+        </script>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0">
+    </head>
+    <body>
+        <script src="./testProject.js"></script>
+        <div id="gameContainer">
+            <div id="gameDiv"></div>
+        </div>
+
+        <script>
+            TestProject.launch();
+        </script>
+    </body>
+</html>
