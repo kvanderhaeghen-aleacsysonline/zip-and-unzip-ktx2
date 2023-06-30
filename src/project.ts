@@ -335,7 +335,6 @@ export class Project implements IProject {
     }
 
     public async createResources(): Promise<void> {
-        const time1 = Date.now();
         const length = assetTexturePaths.length;
         for (let i = 0; i < length; i++) {
             const PixiTexture = await Pixi.Texture.fromURL(assetTexturePaths[i]);
@@ -357,7 +356,6 @@ export class Project implements IProject {
             const sound = new Howl({ src: assetsSoundPaths[j], autoplay: false, loop: false, volume: 0.5 });
             this.howlSounds.push(sound);
         }
-        console.error('No zipped files', Date.now() - time1, 'ms');
     }
 
     private createButtons(): void {
