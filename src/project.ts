@@ -394,6 +394,7 @@ export class Project implements IProject {
         const scaleW = width * 1.5;
         this.createButton('Load local', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
+            const time1 = Date.now();
             this.isLoading = true;
             console.error('Loading...');
             this.updateButtonText('Load local', 'loading...');
@@ -410,21 +411,25 @@ export class Project implements IProject {
             };
             input.click();
             this.isLoading = false;
+            console.error('Zipped files from local ', Date.now() - time1, 'ms');
             this.updateButtonText('Load local', 'Load local');
         });
 
         this.createButton('Load normal', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
+            const time1 = Date.now();
             this.isLoading = true;
             console.error('Loading...');
             this.updateButtonText('Load normal', 'loading...');
             await this.createResources();
             this.isLoading = false;
+            console.error('Files from assets ', Date.now() - time1, 'ms');
             this.updateButtonText('Load normal', 'Load normal');
         });
 
         this.createButton('Load server', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
+            const time1 = Date.now();
             this.isLoading = true;
             console.error('Loading...');
             this.updateButtonText('Load server', 'loading...');
@@ -435,6 +440,7 @@ export class Project implements IProject {
             this.zipperResource.setZipData(new Uint8Array(data));
             this.loadResourcesFromZip();
             this.isLoading = false;
+            console.error('Zipped files from server ', Date.now() - time1, 'ms');
             this.updateButtonText('Load server', 'Load server');
         });
     }
@@ -478,7 +484,6 @@ export class Project implements IProject {
     }
 
     private loadResourcesFromZip(): void {
-        const time1 = Date.now();
         for (let i = 0; i < assetTexturePaths.length; i++) {
             const texture = this.zipperResource.getPixiTexture(assetTexturePaths[i]);
             this.PixiTextures.push(texture);
@@ -497,7 +502,6 @@ export class Project implements IProject {
             this.howlSounds.push(audio);
         }
         console.error('loaded sounds');
-        console.error('Zipped files ', Date.now() - time1, 'ms');
     }
 
     public diposeTextures(): void {
