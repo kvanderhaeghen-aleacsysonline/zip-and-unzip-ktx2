@@ -64,8 +64,8 @@ export class ZippedResource {
 
     public unzipResource(name: string): Uint8Array | undefined {
         if (this.unzipped === undefined) {
-            console.error('no unzipped yet');
             this.unzipped = fflate.unzipSync(this.zipData);
+            console.error(this.unzipped);
         }
         return this.unzipped[name];
     }

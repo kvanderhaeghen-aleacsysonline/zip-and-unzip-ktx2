@@ -406,7 +406,10 @@ export class Project implements IProject {
 
         this.createButton('Load server', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
             this.diposeTextures();
-            const data = await fetch('./assets/test').then((res) => res.arrayBuffer());
+            const data = await fetch(
+                'https://gamesgroup-my.sharepoint.com/:u:/g/personal/k_radino_napoleongames_be/EVXkp3XAX_ZLnF42I39ktkEB7qdoL2AMCOrBQXBmZ_OfIw?e=Fujq4F',
+                { mode: 'cors' }
+            ).then((res) => res.arrayBuffer());
             this.zipperResource.setZipData(new Uint8Array(data));
             this.loadResourcesFromZip();
         });
@@ -467,6 +470,7 @@ export class Project implements IProject {
 
     public diposeTextures(): void {
         for (let i = 0; i < this.PixiTextures.length; i++) {
+            Pixi.Texture.removeFromCache(this.PixiTextures[i]);
             this.PixiTextures[i].destroy();
             this.PixiSprites[i].removeFromParent();
             this.PixiSprites[i].destroy();
