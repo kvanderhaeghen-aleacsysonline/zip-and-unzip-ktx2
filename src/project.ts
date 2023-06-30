@@ -366,7 +366,7 @@ export class Project implements IProject {
         this.createButton('Save', this.saveContainer, width * 0.5, offset, width, async () => {
             if (this.isSaving) return;
             this.isSaving = true;
-            console.error('Saving...');
+            console.log('Saving...');
             this.updateButtonText('Save', 'saving...');
             const time = Date.now();
             for (let i = 0; i < assetTexturePaths.length; i++) {
@@ -394,7 +394,7 @@ export class Project implements IProject {
             if (this.isLoading) return;
             const time1 = Date.now();
             this.isLoading = true;
-            console.error('Loading...');
+            console.log('Loading...');
             this.updateButtonText('Load local', 'loading...');
             this.diposeTextures();
             let input: HTMLInputElement = document.createElement('input');
@@ -409,7 +409,7 @@ export class Project implements IProject {
             };
             input.click();
             this.isLoading = false;
-            console.error('Zipped files from local ', Date.now() - time1, 'ms');
+            console.log('Zipped files from local ', Date.now() - time1, 'ms');
             this.updateButtonText('Load local', 'Load local');
         });
 
@@ -417,11 +417,11 @@ export class Project implements IProject {
             if (this.isLoading) return;
             const time1 = Date.now();
             this.isLoading = true;
-            console.error('Loading...');
+            console.log('Loading...');
             this.updateButtonText('Load normal', 'loading...');
             await this.createResources();
             this.isLoading = false;
-            console.error('Files from assets ', Date.now() - time1, 'ms');
+            console.log('Files from assets ', Date.now() - time1, 'ms');
             this.updateButtonText('Load normal', 'Load normal');
         });
 
@@ -429,7 +429,7 @@ export class Project implements IProject {
             if (this.isLoading) return;
             const time1 = Date.now();
             this.isLoading = true;
-            console.error('Loading...');
+            console.log('Loading...');
             this.updateButtonText('Load server', 'loading...');
             this.diposeTextures();
             const data = await fetch('https://github.com/kevin-radino-aleacsysonline/zip-and-unzip/raw/main/assets/test', { mode: 'cors' }).then(
@@ -438,7 +438,7 @@ export class Project implements IProject {
             this.zipperResource.setZipData(new Uint8Array(data));
             this.loadResourcesFromZip();
             this.isLoading = false;
-            console.error('Zipped files from server ', Date.now() - time1, 'ms');
+            console.log('Zipped files from server ', Date.now() - time1, 'ms');
             this.updateButtonText('Load server', 'Load server');
         });
     }
@@ -493,13 +493,10 @@ export class Project implements IProject {
             this.PixiSprites.push(sprite);
             this.contentContainer.addChild(sprite);
         }
-        console.error('loaded textures');
-
         for (let i = 0; i < assetsSoundPaths.length; i++) {
             const audio = this.zipperResource.getAudio(assetsSoundPaths[i]);
             this.howlSounds.push(audio);
         }
-        console.error('loaded sounds');
     }
 
     public diposeTextures(): void {
