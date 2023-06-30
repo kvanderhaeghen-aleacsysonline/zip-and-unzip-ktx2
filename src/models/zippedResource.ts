@@ -74,10 +74,9 @@ export class ZippedResource {
         const pathArray = path.split('/');
         const fullName = pathArray[pathArray.length - 1];
 
-        const image = document.createElement('img');
         const byteArr = this.unzipResource(fullName);
         const byteStr = this.uint8ToBase64(byteArr!);
-        image.src = `data:image/png;base64,${byteStr}`;
+        const image = `data:image/png;base64,${byteStr}`;
 
         return Pixi.Texture.from(image);
     }

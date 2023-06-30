@@ -313,6 +313,8 @@ export class Project implements IProject {
     public loadContainer: Pixi.Container;
     public soundContainer: Pixi.Container;
 
+    private isSaving = false;
+
     public async launch(): Promise<void> {
         this.canvasApp = new Pixi.Application<HTMLCanvasElement>({ background: '#1099bb', resizeTo: window });
         this.container = new Pixi.Container();
@@ -325,9 +327,7 @@ export class Project implements IProject {
         this.howlSounds = [];
         this.canvasApp.stage.addChild(this.container);
         this.zipperResource = new ZippedResource();
-
-        await this.createResources();
-
+        this.createButtons();
         document.body.appendChild(this.canvasApp.view);
     }
 
@@ -352,40 +352,18 @@ export class Project implements IProject {
             this.howlSounds.push(sound);
         }
         console.error('No zipped files', Date.now() - time1, 'ms');
-        this.createButtons();
     }
 
     private createButtons(): void {
-        const offset = 64,
-            width = 256,
-            height = 128;
+        const offset = 32;
+        const width = 128;
+        const height = 64;
 
-        this.createSaveButton(width, height, offset);
-        this.createLoadButton(width, height, offset);
-        this.createSoundButton(width, height, offset);
-    }
-
-    private createSaveButton(w: number, h: number, offset: number): void {
-        const g1 = new Pixi.Graphics();
-        g1.beginFill(0x000000, 0.9);
-        g1.drawRect(0, 0, w, h);
-        g1.endFill();
-
-        const text = new Pixi.Text('Save', {
-            fontFamily: 'Arial',
-            fontSize: 50,
-            fill: 0xffffff,
-            align: 'center',
-        });
-        text.anchor.set(0.5, 0.5);
-        text.position.set(w * 0.5, h * 0.5);
-
-        this.saveContainer = new Pixi.Container();
-        this.saveContainer.hitArea = new Pixi.Rectangle(0, 0, w, h);
-        this.saveContainer.interactive = true;
-        this.saveContainer.position.set(this.canvasApp.screen.width - w - offset, offset);
-        this.saveContainer.on('click', async () => {
+        this.createButton('Save', this.saveContainer, width * 0.5, offset, width, async () => {
+            if (this.isSaving) return;
+            this.isSaving = true;
             console.error('Saving...');
+            const time = Date.now();
             for (let i = 0; i < assetTexturePaths.length; i++) {
                 await this.zipperResource.zipResource(assetTexturePaths[i]);
             }
@@ -393,32 +371,20 @@ export class Project implements IProject {
                 await this.zipperResource.zipResource(assetsSoundPaths[j]);
             }
             this.zipperResource.donwload();
+            this.isSaving = false;
+            console.log('Saved in ', time - Date.now(), ' ms');
         });
-        this.saveContainer.addChild(g1);
-        this.saveContainer.addChild(text);
-        this.container.addChild(this.saveContainer);
-    }
 
-    private createLoadButton(w: number, h: number, offset: number): void {
-        const g2 = new Pixi.Graphics();
-        g2.beginFill(0x000000, 0.9);
-        g2.drawRect(0, 0, w, h);
-        g2.endFill();
-
-        const text = new Pixi.Text('Load', {
-            fontFamily: 'Arial',
-            fontSize: 50,
-            fill: 0xffffff,
-            align: 'center',
+        this.createButton('Sound', this.loadContainer, width * 0.5 + width + offset, offset, width, async () => {
+            _.sample(this.howlSounds)?.play();
         });
-        text.anchor.set(0.5, 0.5);
-        text.position.set(w * 0.5, h * 0.5);
 
-        this.loadContainer = new Pixi.Container();
-        this.loadContainer.hitArea = new Pixi.Rectangle(0, 0, w, h);
-        this.loadContainer.interactive = true;
-        this.loadContainer.position.set(this.canvasApp.screen.width - w - offset, offset * 2 + h);
-        this.loadContainer.on('click', () => {
+        // this.createButton('Sound', this.soundContainer, width * 0.5 + (width + offset) * 2, offset, width, async () => {
+        //     _.sample(this.howlSounds)?.play();
+        // });
+
+        const scaleW = width * 1.5;
+        this.createButton('Load local', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
             console.error('Loading...');
             this.diposeTextures();
             let input: HTMLInputElement = document.createElement('input');
@@ -433,36 +399,47 @@ export class Project implements IProject {
             };
             input.click();
         });
-        this.loadContainer.addChild(g2);
-        this.loadContainer.addChild(text);
-        this.container.addChild(this.loadContainer);
+
+        this.createButton('Load normal', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
+            await this.createResources();
+        });
+
+        this.createButton('Load server', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
+            this.diposeTextures();
+            const data = await fetch('./assets/test').then((res) => res.arrayBuffer());
+            this.zipperResource.setZipData(new Uint8Array(data));
+            this.loadResourcesFromZip();
+        });
     }
 
-    private createSoundButton(w: number, h: number, offset: number): void {
+    private createButton(name: string, container: Pixi.Container, x: number, y: number, w: number, callback: () => void): void {
+        const h = 64;
+
         const g1 = new Pixi.Graphics();
         g1.beginFill(0x000000, 0.9);
         g1.drawRect(0, 0, w, h);
         g1.endFill();
 
-        const text = new Pixi.Text('Sound', {
+        const text = new Pixi.Text(name, {
             fontFamily: 'Arial',
-            fontSize: 50,
+            fontSize: 32,
             fill: 0xffffff,
             align: 'center',
         });
         text.anchor.set(0.5, 0.5);
         text.position.set(w * 0.5, h * 0.5);
 
-        this.saveContainer = new Pixi.Container();
-        this.saveContainer.hitArea = new Pixi.Rectangle(0, 0, w, h);
-        this.saveContainer.interactive = true;
-        this.saveContainer.position.set(this.canvasApp.screen.width - w - offset, offset * 3 + h * 2);
-        this.saveContainer.on('click', async () => {
-            _.sample(this.howlSounds)?.play();
+        container = new Pixi.Container();
+        container.hitArea = new Pixi.Rectangle(0, 0, w, h);
+        container.interactive = true;
+        container.position.set(x, y);
+        container.on('click', async () => {
+            console.error('Saving...');
+            callback();
         });
-        this.saveContainer.addChild(g1);
-        this.saveContainer.addChild(text);
-        this.container.addChild(this.saveContainer);
+        container.addChild(g1);
+        container.addChild(text);
+        this.container.addChild(container);
     }
 
     private loadResourcesFromZip(): void {
