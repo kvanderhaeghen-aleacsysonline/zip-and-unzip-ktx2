@@ -436,7 +436,6 @@ export class Project implements IProject {
         container.interactive = true;
         container.position.set(x, y);
         container.on('click', async () => {
-            console.error('Saving...');
             callback();
         });
         container.addChild(g1);
