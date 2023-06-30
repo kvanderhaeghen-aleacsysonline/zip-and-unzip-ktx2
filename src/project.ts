@@ -343,8 +343,11 @@ export class Project implements IProject {
                 _.random(PixiTexture.width * 0.5, this.canvasApp.screen.width - PixiTexture.width * 0.5),
                 _.random(PixiTexture.height * 0.5, this.canvasApp.screen.height - PixiTexture.height * 0.5)
             );
-            this.contentContainer.addChild(PixiSprite);
         }
+
+        this.PixiSprites.forEach((sprite: Pixi.Sprite) => {
+            this.contentContainer.addChild(sprite);
+        });
 
         const length2 = assetsSoundPaths.length;
         for (let j = 0; j < length2; j++) {
