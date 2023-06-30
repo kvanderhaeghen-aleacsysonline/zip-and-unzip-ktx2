@@ -2,6 +2,7 @@ import * as Pixi from 'Pixi.js';
 import { ZippedResource } from './models/zippedResource';
 import { Howl, Howler } from 'howler';
 import _ from 'lodash';
+import { randInt } from 'three/src/math/MathUtils';
 
 export interface IProject {
     launch(): void;
@@ -338,6 +339,10 @@ export class Project implements IProject {
             this.PixiTextures.push(PixiTexture);
             const PixiSprite = new Pixi.Sprite(PixiTexture);
             this.PixiSprites.push(PixiSprite);
+            PixiSprite.position.set(
+                _.random(PixiTexture.width * 0.5, this.canvasApp.screen.width - PixiTexture.width * 0.5),
+                _.random(PixiTexture.height * 0.5, this.canvasApp.screen.height - PixiTexture.height * 0.5)
+            );
             this.contentContainer.addChild(PixiSprite);
         }
 
@@ -463,7 +468,13 @@ export class Project implements IProject {
     private loadResourcesFromZip(): void {
         const time1 = Date.now();
         for (let i = 0; i < assetTexturePaths.length; i++) {
-            const sprite = this.zipperResource.getPixiTexture(assetTexturePaths[i]);
+            const texture = this.zipperResource.getPixiTexture(assetTexturePaths[i]);
+            this.PixiTextures.push(texture);
+            const sprite = new Pixi.Sprite(texture);
+            sprite.position.set(
+                _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
+                _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
+            );
             this.PixiSprites.push(sprite);
             this.contentContainer.addChild(sprite);
         }
@@ -475,8 +486,6 @@ export class Project implements IProject {
         }
         console.error('loaded sounds');
         console.error('Zipped files ', Date.now() - time1, 'ms');
-        const sound = _.sample(this.howlSounds);
-        sound?.play();
     }
 
     public diposeTextures(): void {

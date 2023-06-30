@@ -70,7 +70,7 @@ export class ZippedResource {
         return this.unzipped[name];
     }
 
-    public getPixiTexture(path: string): Pixi.Sprite {
+    public getPixiTexture(path: string): Pixi.Texture {
         const pathArray = path.split('/');
         const fullName = pathArray[pathArray.length - 1];
 
@@ -79,8 +79,7 @@ export class ZippedResource {
         const byteStr = this.uint8ToBase64(byteArr!);
         image.src = `data:image/png;base64,${byteStr}`;
 
-        const texture = Pixi.Texture.from(image);
-        return new Pixi.Sprite(texture);
+        return Pixi.Texture.from(image);
     }
 
     public getAudio(path: string): Howl {
