@@ -312,13 +312,16 @@ export class Project implements IProject {
     public saveContainer: Pixi.Container;
     public loadContainer: Pixi.Container;
     public soundContainer: Pixi.Container;
+    public buttonTextMap: Map<string, Pixi.Text>;
 
     private isSaving = false;
+    private isLoading = false;
 
     public async launch(): Promise<void> {
         this.canvasApp = new Pixi.Application<HTMLCanvasElement>({ background: '#1099bb', resizeTo: window });
         this.container = new Pixi.Container();
         this.contentContainer = new Pixi.Container();
+        this.buttonTextMap = new Map<string, Pixi.Text>();
 
         this.container.addChild(this.contentContainer);
 
@@ -366,6 +369,7 @@ export class Project implements IProject {
             if (this.isSaving) return;
             this.isSaving = true;
             console.error('Saving...');
+            this.updateButtonText('Save', 'saving...');
             const time = Date.now();
             for (let i = 0; i < assetTexturePaths.length; i++) {
                 await this.zipperResource.zipResource(assetTexturePaths[i]);
@@ -376,6 +380,7 @@ export class Project implements IProject {
             this.zipperResource.donwload();
             this.isSaving = false;
             console.log('Saved in ', time - Date.now(), ' ms');
+            this.updateButtonText('Save', 'Save');
         });
 
         this.createButton('Sound', this.loadContainer, width * 0.5 + width + offset, offset, width, async () => {
@@ -388,7 +393,10 @@ export class Project implements IProject {
 
         const scaleW = width * 1.5;
         this.createButton('Load local', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
             console.error('Loading...');
+            this.updateButtonText('Load local', 'loading...');
             this.diposeTextures();
             let input: HTMLInputElement = document.createElement('input');
             input.type = 'file';
@@ -401,20 +409,42 @@ export class Project implements IProject {
                 this.loadResourcesFromZip();
             };
             input.click();
+            this.isLoading = false;
+            this.updateButtonText('Load local', 'Load local');
         });
 
         this.createButton('Load normal', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            console.error('Loading...');
+            this.updateButtonText('Load normal', 'loading...');
             await this.createResources();
+            this.isLoading = false;
+            this.updateButtonText('Load normal', 'Load normal');
         });
 
         this.createButton('Load server', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            console.error('Loading...');
+            this.updateButtonText('Load server', 'loading...');
             this.diposeTextures();
             const data = await fetch('https://github.com/kevin-radino-aleacsysonline/zip-and-unzip/raw/main/assets/test', { mode: 'cors' }).then(
                 (res) => res.arrayBuffer()
             );
             this.zipperResource.setZipData(new Uint8Array(data));
             this.loadResourcesFromZip();
+            this.isLoading = false;
+            this.updateButtonText('Load server', 'Load server');
         });
+    }
+
+    private updateButtonText(name: string, text: string): void {
+        if (!this.buttonTextMap.has(name) || this.buttonTextMap.get(name) === undefined) {
+            return;
+        }
+
+        this.buttonTextMap.get(name)!.text = text;
     }
 
     private createButton(name: string, container: Pixi.Container, x: number, y: number, w: number, callback: () => void): void {
@@ -433,6 +463,7 @@ export class Project implements IProject {
         });
         text.anchor.set(0.5, 0.5);
         text.position.set(w * 0.5, h * 0.5);
+        this.buttonTextMap.set(name, text);
 
         container = new Pixi.Container();
         container.hitArea = new Pixi.Rectangle(0, 0, w, h);
