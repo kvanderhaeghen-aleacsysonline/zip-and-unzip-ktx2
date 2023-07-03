@@ -390,27 +390,27 @@ export class Project implements IProject {
         // });
 
         const scaleW = width * 1.5;
-        this.createButton('Load local', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load local zip', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
-            const time1 = Date.now();
             this.isLoading = true;
             console.log('Loading...');
-            this.updateButtonText('Load local', 'loading...');
+            this.updateButtonText('Load local zip', 'loading...');
             this.diposeTextures();
             let input: HTMLInputElement = document.createElement('input');
             input.type = 'file';
             input.onchange = async (_) => {
+                const time1 = Date.now();
                 if (input.files === undefined) return;
                 const arry = Array.from(input.files!);
                 const binaryFile = arry[0];
                 const buffer = await binaryFile.arrayBuffer();
                 this.zipperResource.setZipData(new Uint8Array(buffer));
                 this.loadResourcesFromZip();
+                console.log('Zipped files from local ', Date.now() - time1, 'ms');
             };
             input.click();
             this.isLoading = false;
-            console.log('Zipped files from local ', Date.now() - time1, 'ms');
-            this.updateButtonText('Load local', 'Load local');
+            this.updateButtonText('Load local zip', 'Load local zip');
         });
 
         this.createButton('Load normal', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
@@ -425,12 +425,12 @@ export class Project implements IProject {
             this.updateButtonText('Load normal', 'Load normal');
         });
 
-        this.createButton('Load server', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load server zip', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
             const time1 = Date.now();
             this.isLoading = true;
             console.log('Loading...');
-            this.updateButtonText('Load server', 'loading...');
+            this.updateButtonText('Load server zip', 'loading...');
             this.diposeTextures();
             const data = await fetch('https://github.com/kevin-radino-aleacsysonline/zip-and-unzip/raw/main/assets/test', { mode: 'cors' }).then(
                 (res) => res.arrayBuffer()
@@ -439,7 +439,7 @@ export class Project implements IProject {
             this.loadResourcesFromZip();
             this.isLoading = false;
             console.log('Zipped files from server ', Date.now() - time1, 'ms');
-            this.updateButtonText('Load server', 'Load server');
+            this.updateButtonText('Load server zip', 'Load server');
         });
     }
 
@@ -461,7 +461,7 @@ export class Project implements IProject {
 
         const text = new Pixi.Text(name, {
             fontFamily: 'Arial',
-            fontSize: 32,
+            fontSize: 24,
             fill: 0xffffff,
             align: 'center',
         });
