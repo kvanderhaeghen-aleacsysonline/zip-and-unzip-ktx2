@@ -1,5 +1,5 @@
 {
-    "extends": "./build//tsconfig.all",
+    "extends": "./build/tsconfig.all",
     "compilerOptions": {
         "allowJs": true,
         "checkJs": true,

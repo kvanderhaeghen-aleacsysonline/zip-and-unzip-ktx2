@@ -27,5 +27,15 @@
     },
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "files.eol": "\n",
-    "cSpell.words": ["Cubemap", "Khronos", "Mipmaps", "pvrtc"]
+    "cSpell.words": [
+        "Cubemap",
+        "Khronos",
+        "Mipmaps",
+        "pvrtc"
+    ],
+    "[javascript][json][jsonc][typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        }
+    }
 }

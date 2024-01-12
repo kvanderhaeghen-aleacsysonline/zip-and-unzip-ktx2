@@ -72,9 +72,14 @@ const config: Webpack.Configuration = {
             template: './build/assets/index.html',
             inject: false,
             filename: 'index.html',
+            
         }),
         new CopyPlugin({
-            patterns: [{ from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPath, 'assets') }],
+            patterns: [
+                { from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPath, 'assets') },
+                { from: Path.join(__dirname, '..', 'node_modules/pixi-basis-ktx2/assets/'), to: Path.join(Config.outPath, '') },
+            ],
+            
         }),
         new nodePolyfillPlugin(),
     ],
