@@ -101,6 +101,8 @@ export class ZippedResource {
         const format: FORMATS = resources?.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
         console.error(format);
+        console.error(!!(KTX2Parser.ktx2Binding && KTX2Parser.TranscoderWorker.wasmSource));
+
         asset.format = 'ktx2';
         asset.alias = [path];
         asset.name = [path];

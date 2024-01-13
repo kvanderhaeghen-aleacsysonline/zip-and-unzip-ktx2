@@ -2,7 +2,7 @@ import * as Pixi from 'Pixi.js';
 import { ZippedResource } from './models/zippedResource';
 import { Howl } from 'howler';
 import _ from 'lodash';
-import { KTX2Parser, detectKTX2, loadBasis, loadKTX2 } from 'pixi-basis-ktx2';
+import { BasisBinding, KTX2Parser, detectKTX2, loadBasis, loadKTX2 } from 'pixi-basis-ktx2';
 import { extensions } from '@pixi/core';
 
 export interface IProject {
@@ -348,10 +348,11 @@ export class Project implements IProject {
         document.body.appendChild(this.canvasApp.view);
     }
 
+
     public async loadKTX2Transcoder(): Promise<void> {
+        await KTX2Parser.loadTranscoder(window.location.origin + '/basis_transcoder.js', window.location.origin + '/basis_transcoder.wasm');
         Pixi.Assets.detections.push(detectKTX2);
         Pixi.Assets.loader.parsers.push(loadKTX2);
-        await KTX2Parser.loadTranscoder(window.location.origin + '/basis_transcoder.js', window.location.origin + '/basis_transcoder.wasm');
     }
 
     public async createResources(): Promise<void> {

@@ -7705,15 +7705,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pixi-basis-ktx2@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "pixi-basis-ktx2@npm:0.0.11"
+"pixi-basis-ktx2@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "pixi-basis-ktx2@npm:0.0.12"
   dependencies:
     "@pixi/assets": "npm:^7.3.3"
     "@pixi/compressed-textures": "npm:^7.3.3"
     "@pixi/core": "npm:^7.3.3"
     "@pixi/loaders": "npm:^6.5.10"
-  checksum: fab47b7f20bfeeae6a78d6bac7c7d42638d2221af4f1af87f6380f6279081006c40a304ac672a267109aaf35e62ff3283e96cd0715a4ee6ef3d7d7bee0ebfee0
+  checksum: 456ee6c94a2b00dc3145e25f1ff0432d61027859c3348f7dc57e5971c50cc55a9861e19059ec9883ad9343b89c66e0bde45c3d74e62dcff30eb34ee780bc3d1a
   languageName: node
   linkType: hard
 
@@ -10815,7 +10815,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     node-polyfill-webpack-plugin: "npm:^1.1.4"
     npm-run-all: "npm:^4.1.5"
-    pixi-basis-ktx2: "npm:^0.0.11"
+    pixi-basis-ktx2: "npm:^0.0.12"
     pixi.js: "npm:^7.3.3"
     prettier: "npm:^2.3.2"
     stats.js: "npm:^0.17.0"
