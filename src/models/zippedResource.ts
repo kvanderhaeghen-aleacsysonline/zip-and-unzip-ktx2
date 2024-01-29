@@ -1,9 +1,10 @@
-import { ALPHA_MODES, BufferResource, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/core';
+import { ALPHA_MODES, BufferResource, FORMATS, MIPMAP_MODES, Resource, TYPES } from '@pixi/core';
 import * as fflate from 'fflate';
 import { Howl } from 'howler';
-import { BASIS_FORMAT_TO_INTERNAL_FORMAT, BASIS_FORMAT_TO_TYPE, BASIS_FORMATS, KTX2Parser, TranscoderWorkerKTX2 } from 'pixi-basis-ktx2';
+import { BASIS_FORMAT_TO_INTERNAL_FORMAT, BASIS_FORMAT_TO_TYPE, BASIS_FORMATS, KTX2Parser, loadKTX2, TranscoderWorkerKTX2, loadKTX2BufferToTexture } from 'pixi-basis-ktx2';
 import { CompressedTextureResource } from '@pixi/compressed-textures'
 import * as Pixi from 'Pixi.js';
+import _ from 'lodash';
 
 type CompressionLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
@@ -26,6 +27,20 @@ export class ZippedResource {
         this.zipInfo = {};
     }
 
+    public resetZip(): void  {
+        this.zipInfo = {};
+    }
+
+    public resetUnzip(): void {
+        if(this.unzipped) {
+            const keys = Object.keys(this.unzipped);
+            keys.forEach((key)=> {
+                delete this.unzipped![key];
+            });
+            this.unzipped = undefined;
+        }
+    }
+
     public download(): void {
         this.zipUp();
         const blob = new Blob([this.zipData], { type: 'application/plain' });
@@ -40,7 +55,7 @@ export class ZippedResource {
             a.style.display = 'none';
             a.click();
         };
-        downloadURL(blobUrl, 'test');
+        downloadURL(blobUrl, 'bundle.alon');
     }
 
     public async zipResource(path: string): Promise<void> {
@@ -75,73 +90,64 @@ export class ZippedResource {
         return this.unzipped[name];
     }
 
-    public async getPixiTexture(path: string): Promise<Pixi.Texture> {
+    public async getPixiTexture(path: string): Promise<Pixi.Texture | undefined> {
         const pathArray = path.split('/');
         const fullName = pathArray[pathArray.length - 1];
 
         const isKtx2 = fullName.includes('ktx2');
         if (isKtx2) {
-            return (await this.getKTX2Texture(path, {}))[0];
+            const texture = await this.getKTX2Texture(path, {});
+            return texture;
         }
         const byteArr = this.unzipResource(fullName);
+        if (!byteArr) return undefined;
+
         const byteStr = this.uint8ToBase64(byteArr!);
         const image = `data:image/png;base64,${byteStr}`;
 
-        return Pixi.Texture.from(image);
+        const texture = await Pixi.Texture.from(image);
+        return texture;
     }
 
-    public async getKTX2Texture(path: string, asset: Pixi.ResolvedAsset): Promise<Pixi.Texture[]> {
+    public async getKTX2Texture(path: string, asset: Pixi.ResolvedAsset): Promise<Pixi.Texture | undefined> {
         const pathArray = path.split('/');
         const fullName = pathArray[pathArray.length - 1];
 
         const byteArr = this.unzipResource(fullName);
-        await TranscoderWorkerKTX2.onTranscoderInitialized;
-        const resources = await KTX2Parser.transcode(byteArr!.buffer);
-        const type: TYPES | undefined = resources?.basisFormat ? BASIS_FORMAT_TO_TYPE[resources?.basisFormat] : undefined;
-        const format: FORMATS = resources?.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
+        if (!byteArr) return undefined;
+        return (await loadKTX2BufferToTexture(byteArr!, fullName, asset, Pixi.Assets.loader));
 
-        console.error(format);
-        console.error(!!(KTX2Parser.ktx2Binding && KTX2Parser.TranscoderWorker.wasmSource));
+        // await TranscoderWorkerKTX2.onTranscoderInitialized;
+        // const resources = await KTX2Parser.transcode(byteArr!.buffer);
+        // const type: TYPES | undefined = resources?.basisFormat ? BASIS_FORMAT_TO_TYPE[resources?.basisFormat] : undefined;
+        // const format: FORMATS = resources?.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
-        asset.format = 'ktx2';
-        asset.alias = [path];
-        asset.name = [path];
-        asset.src = path;
-        asset.srcs = path;
-        asset.loadParser = undefined;
-        asset.data = {};
-        const textures =
-            resources?.map((resource) => {
-                resource.internal = true;
-                // (resource as any)._extensions = INTERNAL_FORMATS.
+        // console.error(format);
+        // console.error(!!(KTX2Parser.ktx2Binding && KTX2Parser.TranscoderWorker.wasmSource));
 
-                // const buff = (resource as any)._levelBuffers[0];
-                // const test = Pixi.BaseTexture.fromBuffer(buff.levelBuffer as Uint8Array, buff.levelWidth, buff.levelHeight, {
-                //     mipmap: resource instanceof CompressedTextureResource && resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
-                //     alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                //     type,
-                //     format,
-                //     width: buff.levelWidth,
-                //     height: buff.levelHeight,
-                // });
+        // asset.format = 'ktx2';
+        // asset.alias = [path];
+        // asset.name = [path];
+        // asset.src = path;
+        // asset.srcs = path;
+        // asset.loadParser = undefined;
+        // asset.data = {};
+        // const textures =
+        //     resources?.map((resource) => {
+        //         const base = new Pixi.BaseTexture(resource, {
+        //             mipmap: resource instanceof CompressedTextureResource && resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
+        //             alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+        //             type,
+        //             format,
+        //             ...asset.data,
+        //         });
+        //         const texture = Pixi.createTexture(base, Pixi.Assets.loader, path);
+        //         console.error(texture);
+        //         console.error(base);
+        //         return texture;
+        //     }) ?? [];
 
-                (resource as any).format = BASIS_FORMAT_TO_INTERNAL_FORMAT[resources?.basisFormat];
-                console.error(resource);
-                const base = new Pixi.BaseTexture(resource, {
-                    mipmap: resource instanceof CompressedTextureResource && resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
-                    alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                    type,
-                    format,
-                    internal: true,
-                    ...asset.data,
-                });
-                const texture = Pixi.createTexture(base, Pixi.Assets.loader, path);
-                console.error(texture);
-                console.error(base);
-                return texture;
-            }) ?? [];
-
-            return textures;
+        // return textures[0];
     }
 
     public getAudio(path: string): Howl {

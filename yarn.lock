@@ -508,17 +508,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pixi/loaders@npm:^6.5.10":
-  version: 6.5.10
-  resolution: "@pixi/loaders@npm:6.5.10"
-  peerDependencies:
-    "@pixi/constants": 6.5.10
-    "@pixi/core": 6.5.10
-    "@pixi/utils": 6.5.10
-  checksum: 10913f40213f2224f47d693494fb0860ef3956ccbdc3c401e3ca33c165322aa926295ece7c4478d6a6641866b5596325782323c8cd83c8fa5e14473a25f6c860
-  languageName: node
-  linkType: hard
-
 "@pixi/math@npm:7.3.3":
   version: 7.3.3
   resolution: "@pixi/math@npm:7.3.3"
@@ -7705,15 +7694,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pixi-basis-ktx2@npm:^0.0.12":
-  version: 0.0.12
-  resolution: "pixi-basis-ktx2@npm:0.0.12"
+"pixi-basis-ktx2@npm:^0.0.15":
+  version: 0.0.15
+  resolution: "pixi-basis-ktx2@npm:0.0.15"
   dependencies:
     "@pixi/assets": "npm:^7.3.3"
     "@pixi/compressed-textures": "npm:^7.3.3"
     "@pixi/core": "npm:^7.3.3"
-    "@pixi/loaders": "npm:^6.5.10"
-  checksum: 456ee6c94a2b00dc3145e25f1ff0432d61027859c3348f7dc57e5971c50cc55a9861e19059ec9883ad9343b89c66e0bde45c3d74e62dcff30eb34ee780bc3d1a
+  checksum: 11d3c926c02e8cd4c0e198b690ca7147bd12938abe7de362b565f1316f158868c337a1add0293e945c0b8271dd2df7ef320630c2542453ca6ee181fbd2c82018
   languageName: node
   linkType: hard
 
@@ -10815,7 +10803,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     node-polyfill-webpack-plugin: "npm:^1.1.4"
     npm-run-all: "npm:^4.1.5"
-    pixi-basis-ktx2: "npm:^0.0.12"
+    pixi-basis-ktx2: "npm:^0.0.15"
     pixi.js: "npm:^7.3.3"
     prettier: "npm:^2.3.2"
     stats.js: "npm:^0.17.0"
