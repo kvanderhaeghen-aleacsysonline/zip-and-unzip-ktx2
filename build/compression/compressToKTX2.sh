@@ -12,7 +12,7 @@ shopt -s lastpipe
 script_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Specify the root directory
-root_directory="$script_directory"
+root_directory="$(realpath "$script_directory/../../assets")"
 
 # Extensions to filter
 extensions=("png" "jpeg" "jpg")

@@ -1,12 +1,13 @@
 {
     "name": "zip-unzip-ktx2",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "",
     "main": "index.js",
     "scripts": {
         "dev": "cross-env TS_NODE_PROJECT=build/tsconfig.node.json NODE_ENV=development webpack serve --config build/webpack.ts",
         "lint": "tsc --build build/tsconfig.all.json && eslint --config build/eslintrc.js 'src/**/*'",
-        "format": "prettier --write --config build/prettierrc.json 'src/**/*'"
+        "format": "prettier --write --config build/prettierrc.json 'src/**/*'",
+        "compress:ktx2": "sh ./build/compression/compressToKTX2.sh"
     },
     "author": "Kristof Van Der Haeghen",
     "license": "ISC",

@@ -491,10 +491,7 @@ export class Project implements IProject {
             const url = this.isKTX2Enabled ? 
                 'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/ktx2_images.alon' :
                 'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/normal_images.alon';
-            const data = await fetch(url,  {
-                method: 'get',
-                mode: 'no-cors',
-            }).then(
+            const data = await fetch(url).then(
                 (res) => res.arrayBuffer()
             );
             console.log('Downloaded zip in ', Date.now() - time1, 'ms');
