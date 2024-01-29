@@ -314,8 +314,8 @@ export class Project implements IProject {
     public container: Pixi.Container;
     public canvasApp: Pixi.Application<HTMLCanvasElement>;
 
-    public PixiTextures: Pixi.Texture<Pixi.Resource>[];
-    public PixiSprites: Pixi.Sprite[];
+    public pixiTextures: Pixi.Texture<Pixi.Resource>[];
+    public pixiSprites: Pixi.Sprite[];
     public howlSounds: Howl[];
 
     public contentContainer: Pixi.Container;
@@ -339,8 +339,8 @@ export class Project implements IProject {
 
         this.container.addChild(this.contentContainer);
 
-        this.PixiSprites = [];
-        this.PixiTextures = [];
+        this.pixiSprites = [];
+        this.pixiTextures = [];
         this.howlSounds = [];
         this.canvasApp.stage.addChild(this.container);
         this.zipperResource = new ZippedResource();
@@ -360,17 +360,23 @@ export class Project implements IProject {
         const texturePaths = getTextureAssetPaths(this.isKTX2Enabled);
         const length = texturePaths.length;
         for (let i = 0; i < length; i++) {
-            const PixiTexture = await Pixi.Texture.fromURL(texturePaths[i]);
-            this.PixiTextures.push(PixiTexture);
-            const PixiSprite = new Pixi.Sprite(PixiTexture);
-            this.PixiSprites.push(PixiSprite);
-            PixiSprite.position.set(
-                _.random(PixiTexture.width * 0.5, this.canvasApp.screen.width - PixiTexture.width * 0.5),
-                _.random(PixiTexture.height * 0.5, this.canvasApp.screen.height - PixiTexture.height * 0.5)
-            );
+            try {
+                const pixiTexture = await Pixi.Assets.load(texturePaths[i]);
+                this.pixiTextures.push(pixiTexture);
+                const pixiSprite = new Pixi.Sprite(pixiTexture);
+                this.pixiSprites.push(pixiSprite);
+                pixiSprite.position.set(
+                    _.random(pixiTexture.width * 0.5, this.canvasApp.screen.width - pixiTexture.width * 0.5),
+                    _.random(pixiTexture.height * 0.5, this.canvasApp.screen.height - pixiTexture.height * 0.5)
+                );
+            } catch (error) {
+                console.warn(`Texture [${texturePaths[i]}] not found! Continuing...`);
+            } finally {
+                continue;
+            }
         }
 
-        this.PixiSprites.forEach((sprite: Pixi.Sprite) => {
+        this.pixiSprites.forEach((sprite: Pixi.Sprite) => {
             this.contentContainer.addChild(sprite);
         });
 
@@ -422,18 +428,30 @@ export class Project implements IProject {
 
             if (this.isKTX2Enabled) {
                 const texture: Pixi.Texture = await Pixi.Assets.load(window.location.origin + '/assets/KTX2/KTX.ktx2');
-                this.PixiTextures.push(texture);
+                this.pixiTextures.push(texture);
                 const sprite = new Pixi.Sprite(texture);
                 sprite.position.set(
                     _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
                     _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
                 );
-                this.PixiSprites.push(sprite);
+                this.pixiSprites.push(sprite);
                 this.contentContainer.addChild(sprite);
             }
         });
 
-        this.createButton('Load local zip', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load normal', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
+            if (this.isLoading) return;
+            const time1 = Date.now();
+            this.isLoading = true;
+            console.log('Loading...');
+            this.updateButtonText('Load normal', 'loading...');
+            await this.createResources();
+            this.isLoading = false;
+            console.log('Total time loading files from assets ', Date.now() - time1, 'ms');
+            this.updateButtonText('Load normal', 'Load normal');
+        });
+
+        this.createButton('Load local zip', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
             if (this.isLoading) return;
             this.zipperResource.resetUnzip();
             this.isLoading = true;
@@ -448,30 +466,18 @@ export class Project implements IProject {
                     const arry = Array.from(input.files!);
                     const binaryFile = arry[0];
                     const buffer = await binaryFile.arrayBuffer();
-                    console.warn('Downloaded zip in ', Date.now() - time1, 'ms');
+                    console.log('Downloaded zip in ', Date.now() - time1, 'ms');
                     const time2 = Date.now();
                     const imageExt = this.isKTX2Enabled ? 'KTX2' :'PNG/JPEG'
                     this.zipperResource.setZipData(new Uint8Array(buffer));
                     await this.loadResourcesFromZip();
-                    console.warn(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
-                    console.warn('Total time loading zipped files from local ', Date.now() - time1, 'ms');
+                    console.log(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+                    console.log('Total time loading zipped files from local ', Date.now() - time1, 'ms');
                 
             };
             input.click();
             this.isLoading = false;
             this.updateButtonText('Load local zip', 'Load local zip');
-        });
-
-        this.createButton('Load normal', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
-            if (this.isLoading) return;
-            const time1 = Date.now();
-            this.isLoading = true;
-            console.log('Loading...');
-            this.updateButtonText('Load normal', 'loading...');
-            await this.createResources();
-            this.isLoading = false;
-            console.log('Files from assets ', Date.now() - time1, 'ms');
-            this.updateButtonText('Load normal', 'Load normal');
         });
 
         this.createButton('Load server zip', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
@@ -491,12 +497,12 @@ export class Project implements IProject {
             }).then(
                 (res) => res.arrayBuffer()
             );
-            console.warn('Downloaded zip in ', Date.now() - time1, 'ms');
+            console.log('Downloaded zip in ', Date.now() - time1, 'ms');
             const time2 = Date.now();
             const imageExt = this.isKTX2Enabled ? 'KTX2' :'PNG/JPEG'
             this.zipperResource.setZipData(new Uint8Array(data));
             await this.loadResourcesFromZip();
-            console.warn(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+            console.log(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
             this.isLoading = false;
             console.log('Total time loading zipped files from server ', Date.now() - time1, 'ms'); 
             this.updateButtonText('Load server zip', 'Load server');
@@ -550,17 +556,17 @@ export class Project implements IProject {
             // console.warn('Texture ' + i, texturePaths[i]);
             const texture = await this.zipperResource.getPixiTexture(texturePaths[i]);
             if (!texture) {
-                console.warn(`Texture [${texturePaths[i]}] not found! Continuing...`)
+                console.warn(`Texture [${texturePaths[i]}] not found! Continuing...`);
                 continue;
             }
 
-            this.PixiTextures.push(texture);
+            this.pixiTextures.push(texture);
             const sprite = new Pixi.Sprite(texture);
             sprite.position.set(
                 _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
                 _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
             );
-            this.PixiSprites.push(sprite);
+            this.pixiSprites.push(sprite);
             this.contentContainer.addChild(sprite);
         }
         for (let i = 0; i < assetsSoundPaths.length; i++) {
@@ -570,14 +576,14 @@ export class Project implements IProject {
     }
 
     public disposeTextures(): void {
-        for (let i = 0; i < this.PixiTextures.length; i++) {
-            Pixi.Texture.removeFromCache(this.PixiTextures[i]);
-            delete this.PixiTextures[i];
-            this.PixiSprites[i].removeFromParent();
-            delete this.PixiSprites[i];
+        for (let i = 0; i < this.pixiTextures.length; i++) {
+            Pixi.Texture.removeFromCache(this.pixiTextures[i]);
+            delete this.pixiTextures[i];
+            this.pixiSprites[i].removeFromParent();
+            delete this.pixiSprites[i];
         }
         this.howlSounds.splice(0);
-        this.PixiTextures.splice(0);
-        this.PixiSprites.splice(0);
+        this.pixiTextures.splice(0);
+        this.pixiSprites.splice(0);
     }
 }
