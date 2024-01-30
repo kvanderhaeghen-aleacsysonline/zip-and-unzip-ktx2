@@ -323,11 +323,13 @@ export class Project implements IProject {
     public loadContainer: Pixi.Container;
     public soundContainer: Pixi.Container;
     public buttonTextMap: Map<string, Pixi.Text>;
+    public resultText?: Pixi.Text;
 
     private isSaving = false;
     private isLoading = false;
     private isKTX2Enabled = false;
     private ktxBtnTxt = 'KTX2 Disabled';
+    private href = window.location.origin + window.location.pathname;
 
     public async launch(): Promise<void> {
         await this.loadKTX2Transcoder();
@@ -350,7 +352,7 @@ export class Project implements IProject {
 
 
     public async loadKTX2Transcoder(): Promise<void> {
-        await KTX2Parser.loadTranscoder(window.location.origin + '/basis_transcoder.js', window.location.origin + '/basis_transcoder.wasm');
+        await KTX2Parser.loadTranscoder(this.href + '/basis_transcoder.js', this.href + '/basis_transcoder.wasm');
         Pixi.Assets.detections.push(detectKTX2);
         Pixi.Assets.loader.parsers.push(loadKTX2);
         Pixi.Assets.resolver.parsers.push(resolveKTX2TextureUrl);
@@ -360,8 +362,9 @@ export class Project implements IProject {
         const texturePaths = getTextureAssetPaths(this.isKTX2Enabled);
         const length = texturePaths.length;
         for (let i = 0; i < length; i++) {
+            const texturePath = this.href.replace('index.html','') + texturePaths[i].replace('./','')
             try {
-                const pixiTexture = await Pixi.Assets.load(texturePaths[i]);
+                const pixiTexture = await Pixi.Assets.load(texturePath);
                 this.pixiTextures.push(pixiTexture);
                 const pixiSprite = new Pixi.Sprite(pixiTexture);
                 this.pixiSprites.push(pixiSprite);
@@ -370,7 +373,7 @@ export class Project implements IProject {
                     _.random(pixiTexture.height * 0.5, this.canvasApp.screen.height - pixiTexture.height * 0.5)
                 );
             } catch (error) {
-                console.warn(`Texture [${texturePaths[i]}] not found! Continuing...`);
+                console.warn(`Texture [${texturePath}] not found! Continuing...`);
             } finally {
                 continue;
             }
@@ -393,11 +396,11 @@ export class Project implements IProject {
         const height = 64;
         const scaleW = width * 1.5;
 
-        this.createButton('Save', this.saveContainer, width * 0.5, offset, width, async () => {
+        this.createButton('Save', this.saveContainer, 20, offset, scaleW, async () => {
             if (this.isSaving) return;
             this.isSaving = true;
             this.zipperResource.resetZip();
-            console.log('Saving...\nHas KTX2 textures: ' + this.isKTX2Enabled);
+            this.logResults('Saving...\nHas KTX2 textures: ' + this.isKTX2Enabled);
             this.updateButtonText('Save', 'saving...');
             this.disposeTextures();
             const time1 = Date.now();
@@ -411,23 +414,24 @@ export class Project implements IProject {
             }
             this.zipperResource.download();
             this.isSaving = false;
-            console.log('Saved in ', Date.now() - time1, ' ms');
+            this.logResults('Saved in ', Date.now() - time1, ' ms');
             this.updateButtonText('Save', 'Save');
         });
 
-        this.createButton('Sound', this.loadContainer, width * 0.5 + width + offset, offset, width, async () => {
+        this.createButton('Sound', this.loadContainer, 20 + scaleW + offset, offset, scaleW, async () => {
             _.sample(this.howlSounds)?.play();
         });
 
-        const ktx2Btn = this.createButton(this.ktxBtnTxt, this.loadContainer, width * 0.5 + (width + offset) * 2, offset, scaleW, async () => {
+        const ktx2Btn = this.createButton(this.ktxBtnTxt, this.loadContainer, 20, offset + height * 1.5 , scaleW, async () => {
             this.disposeTextures();
 
             this.isKTX2Enabled = !this.isKTX2Enabled;
             this.ktxBtnTxt = this.isKTX2Enabled ? 'KTX2 Enabled': 'KTX2 Disabled';
             ktx2Btn.text.text = this.ktxBtnTxt;
+            this.logResults(this.ktxBtnTxt);
 
             if (this.isKTX2Enabled) {
-                const texture: Pixi.Texture = await Pixi.Assets.load(window.location.origin + '/assets/KTX2/KTX.ktx2');
+                const texture: Pixi.Texture = await Pixi.Assets.load(this.href  + '/assets/KTX2/KTX.ktx2');
                 this.pixiTextures.push(texture);
                 const sprite = new Pixi.Sprite(texture);
                 sprite.position.set(
@@ -439,23 +443,24 @@ export class Project implements IProject {
             }
         });
 
-        this.createButton('Load normal', this.soundContainer, width * 0.5, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load normal', this.soundContainer, 20  + scaleW + offset, offset + height * 1.5 , scaleW, async () => {
             if (this.isLoading) return;
             const time1 = Date.now();
             this.isLoading = true;
-            console.log('Loading...');
+            this.logResults('Loading...');
             this.updateButtonText('Load normal', 'loading...');
             await this.createResources();
             this.isLoading = false;
-            console.log('Total time loading files from assets ', Date.now() - time1, 'ms');
+            const imageExt = this.isKTX2Enabled ? 'KTX2' :'PNG/JPEG'
+            this.logResults(`Total time loading files from assets [${imageExt}] `, Date.now() - time1, 'ms');
             this.updateButtonText('Load normal', 'Load normal');
         });
 
-        this.createButton('Load local zip', this.soundContainer, width * 0.5 + scaleW + offset, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load local zip', this.soundContainer, 20, offset + height * 3 , scaleW, async () => {
             if (this.isLoading) return;
             this.zipperResource.resetUnzip();
             this.isLoading = true;
-            console.log('Loading...');
+            this.logResults('Loading...');
             this.updateButtonText('Load local zip', 'loading...');
             this.disposeTextures();
             let input: HTMLInputElement = document.createElement('input');
@@ -466,13 +471,13 @@ export class Project implements IProject {
                     const arry = Array.from(input.files!);
                     const binaryFile = arry[0];
                     const buffer = await binaryFile.arrayBuffer();
-                    console.log('Downloaded zip in ', Date.now() - time1, 'ms');
+                    this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
                     const time2 = Date.now();
                     const imageExt = this.isKTX2Enabled ? 'KTX2' :'PNG/JPEG'
                     this.zipperResource.setZipData(new Uint8Array(buffer));
                     await this.loadResourcesFromZip();
-                    console.log(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
-                    console.log('Total time loading zipped files from local ', Date.now() - time1, 'ms');
+                    this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+                    this.logResults('Total time loading zipped files from local ', Date.now() - time1, 'ms');
                 
             };
             input.click();
@@ -480,12 +485,12 @@ export class Project implements IProject {
             this.updateButtonText('Load local zip', 'Load local zip');
         });
 
-        this.createButton('Load server zip', this.soundContainer, width * 0.5 + (scaleW + offset) * 2, offset * 2 + height, scaleW, async () => {
+        this.createButton('Load server zip', this.soundContainer, 20 + scaleW + offset, offset + height * 3, scaleW, async () => {
             if (this.isLoading) return;
             this.zipperResource.resetUnzip();
             const time1 = Date.now();
             this.isLoading = true;
-            console.log('Loading...');
+            this.logResults('Loading...');
             this.updateButtonText('Load server zip', 'loading...');
             this.disposeTextures();
             const url = this.isKTX2Enabled ? 
@@ -494,16 +499,26 @@ export class Project implements IProject {
             const data = await fetch(url).then(
                 (res) => res.arrayBuffer()
             );
-            console.log('Downloaded zip in ', Date.now() - time1, 'ms');
+            this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
             const time2 = Date.now();
             const imageExt = this.isKTX2Enabled ? 'KTX2' :'PNG/JPEG'
             this.zipperResource.setZipData(new Uint8Array(data));
             await this.loadResourcesFromZip();
-            console.log(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+            this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
             this.isLoading = false;
-            console.log('Total time loading zipped files from server ', Date.now() - time1, 'ms'); 
+            this.logResults('Total time loading zipped files from server ', Date.now() - time1, 'ms'); 
             this.updateButtonText('Load server zip', 'Load server');
-        });        
+        }); 
+        
+        this.resultText = this.createResultText('Logs:', 20, offset + height * 4.5).text;
+    }
+
+    private logResults(message?: any, ...optionalParams: any[]): void {
+        const params = optionalParams.length === 0 ? '': optionalParams.join(' ');
+        console.log(message, params);
+        if(this.resultText) {
+            this.resultText.text += '\n  - ' + message + params;
+        }
     }
 
     private updateButtonText(name: string, text: string): void {
@@ -536,7 +551,10 @@ export class Project implements IProject {
         container.hitArea = new Pixi.Rectangle(0, 0, w, h);
         container.interactive = true;
         container.position.set(x, y);
-        container.on('click', async () => {
+        // container.on('click', async () => {
+        //     callback();
+        // });
+        container.on('pointerup', async () => {
             callback();
         });
         container.addChild(g1);
@@ -544,6 +562,21 @@ export class Project implements IProject {
         this.container.addChild(container);
 
         return { button: container, text };
+    }
+
+    private createResultText(name: string, x: number, y: number): { text: Pixi.Text } {
+        const text = new Pixi.Text(name, {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0xffffff,
+            strokeThickness: 4,
+            align: 'left',
+        });
+        text.position.set(x, y);
+
+        this.container.addChild(text);
+
+        return { text };
     }
 
     private async loadResourcesFromZip(): Promise<void> {
