@@ -104,7 +104,8 @@ export class Project implements IProject {
             if (this.isSaving) return;
             this.isSaving = true;
             this.zipperResource.resetZip();
-            this.logResults('Saving...\nHas KTX2 textures: ' + this.ktx2Type);
+            const addon = this.ktx2Type ? "[Has KTX2 textures: " + this.ktx2Type?.toUpperCase() + "]" : "";
+            this.logResults('Saving... ' + addon);
             this.updateButtonText('Save', 'saving...');
             this.disposeTextures();
             const time1 = Date.now();
