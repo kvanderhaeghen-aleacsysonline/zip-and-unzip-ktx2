@@ -107,7 +107,7 @@ export class Project implements IProject {
             const addon = this.ktx2Type ? "[Has KTX2 textures: " + this.ktx2Type?.toUpperCase() + "]" : "";
             this.logResults('Saving... ' + addon);
             this.updateButtonText('Save', 'saving...');
-            this.disposeTextures();
+            this.disposeAll();
             const time1 = Date.now();
             const texturePaths = getTextureAssetPaths(this.ktx2Type);
             const length = texturePaths.length;
@@ -128,7 +128,7 @@ export class Project implements IProject {
         });
 
         const ktx2Btn = this.createButton(this.ktxBtnTxt, this.loadContainer, 20, offset + height * 1.5 , scaleW, scaleH, async () => {
-            this.disposeTextures();
+            this.disposeAll();
 
             if (!this.ktx2Type) {
                 this.ktx2Type = KTX2Types.ETC1S;
@@ -161,7 +161,7 @@ export class Project implements IProject {
             this.isLoading = true;
             this.logResults('Loading...');
             this.updateButtonText('Load normal', 'loading...');
-            this.disposeTextures();
+            this.disposeAll();
             const time1 = Date.now();
             await this.createResources();
             this.isLoading = false;
@@ -176,7 +176,7 @@ export class Project implements IProject {
             this.isLoading = true;
             this.logResults('Loading...');
             this.updateButtonText('Load local zip', 'loading...');
-            this.disposeTextures();
+            this.disposeAll();
             let input: HTMLInputElement = document.createElement('input');
             input.type = 'file';
             input.onchange = async (_) => {
@@ -205,9 +205,9 @@ export class Project implements IProject {
             this.isLoading = true;
             this.logResults('Loading...');
             this.updateButtonText('Load server zip', 'loading...');
-            this.disposeTextures();
+            this.disposeAll();
             const time1 = Date.now();
-            const url = this.ktx2Type ? serverUrlNormal : (this.ktx2Type === KTX2Types.ETC1S ? serverUrlKtx2Etc1s : serverUrlKtx2Uastc);
+            const url = this.ktx2Type ? (this.ktx2Type === KTX2Types.ETC1S ? serverUrlKtx2Etc1s : serverUrlKtx2Uastc) : serverUrlNormal;
             const data = await fetch(url).then(
                 (res) => res.arrayBuffer()
             );
@@ -314,8 +314,25 @@ export class Project implements IProject {
         }
         for (let i = 0; i < assetsSoundPaths.length; i++) {
             const audio = this.zipperResource.getAudio(assetsSoundPaths[i]);
+            if (!audio) {
+                console.warn(`Sound [${assetsSoundPaths[i]}] not found! Continuing...`);
+                continue;
+            }
             this.howlSounds.push(audio);
         }
+    }
+
+    public disposeAll(): void {
+        this.disposeSounds();
+        this.disposeTextures();
+    }
+
+    public disposeSounds(): void {
+        for (let i = 0; i < this.howlSounds.length; i++) {
+            this.howlSounds[i].unload();
+            delete this.howlSounds[i];
+        }
+        this.howlSounds.splice(0);
     }
 
     public disposeTextures(): void {
@@ -325,7 +342,6 @@ export class Project implements IProject {
             this.pixiSprites[i].removeFromParent();
             delete this.pixiSprites[i];
         }
-        this.howlSounds.splice(0);
         this.pixiTextures.splice(0);
         this.pixiSprites.splice(0);
     }
