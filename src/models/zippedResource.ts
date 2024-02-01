@@ -92,62 +92,32 @@ export class ZippedResource {
 
     public async getPixiTexture(path: string): Promise<Pixi.Texture | undefined> {
         const pathArray = path.split('/');
-        const fullName = pathArray[pathArray.length - 1];
+        const fileName = pathArray[pathArray.length - 1];
 
-        const isKtx2 = fullName.includes('ktx2');
+        const isKtx2 = fileName.includes('ktx2');
         if (isKtx2) {
-            const texture = await this.getKTX2Texture(path, {});
+            const texture = await this.getKTX2Texture(fileName);
             return texture;
         }
-        const byteArr = this.unzipResource(fullName);
+
+        const texture = await this.getNormalTexture(fileName);
+        return texture;
+    }
+
+    public async getNormalTexture(fileName: string): Promise<Pixi.Texture | undefined> {
+        const byteArr = this.unzipResource(fileName);
         if (!byteArr) return undefined;
 
         const byteStr = this.uint8ToBase64(byteArr!);
         const image = `data:image/png;base64,${byteStr}`;
-
-        const texture = await Pixi.Texture.from(image);
-        return texture;
+        return Pixi.Texture.from(image);
     }
 
-    public async getKTX2Texture(path: string, asset: Pixi.ResolvedAsset): Promise<Pixi.Texture | undefined> {
-        const pathArray = path.split('/');
-        const fullName = pathArray[pathArray.length - 1];
-
-        const byteArr = this.unzipResource(fullName);
+    public async getKTX2Texture(fileName: string): Promise<Pixi.Texture | undefined> {
+        const byteArr = this.unzipResource(fileName);
         if (!byteArr) return undefined;
-        return (await loadKTX2BufferToTexture(byteArr!, fullName, asset, Pixi.Assets.loader));
 
-        // await TranscoderWorkerKTX2.onTranscoderInitialized;
-        // const resources = await KTX2Parser.transcode(byteArr!.buffer);
-        // const type: TYPES | undefined = resources?.basisFormat ? BASIS_FORMAT_TO_TYPE[resources?.basisFormat] : undefined;
-        // const format: FORMATS = resources?.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
-
-        // console.error(format);
-        // console.error(!!(KTX2Parser.ktx2Binding && KTX2Parser.TranscoderWorker.wasmSource));
-
-        // asset.format = 'ktx2';
-        // asset.alias = [path];
-        // asset.name = [path];
-        // asset.src = path;
-        // asset.srcs = path;
-        // asset.loadParser = undefined;
-        // asset.data = {};
-        // const textures =
-        //     resources?.map((resource) => {
-        //         const base = new Pixi.BaseTexture(resource, {
-        //             mipmap: resource instanceof CompressedTextureResource && resource.levels > 1 ? MIPMAP_MODES.ON_MANUAL : MIPMAP_MODES.OFF,
-        //             alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-        //             type,
-        //             format,
-        //             ...asset.data,
-        //         });
-        //         const texture = Pixi.createTexture(base, Pixi.Assets.loader, path);
-        //         console.error(texture);
-        //         console.error(base);
-        //         return texture;
-        //     }) ?? [];
-
-        // return textures[0];
+        return loadKTX2BufferToTexture(byteArr!, fileName, Pixi.Assets.loader);
     }
 
     public getAudio(path: string): Howl {

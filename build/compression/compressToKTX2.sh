@@ -4,6 +4,16 @@
 start_time=$(date +%s%3N)
 start_time_seconds=$SECONDS
 
+# Parse command-line parameters or set default values
+# ----> Use --dir to give the directory to export the files to <----
+if [ "$#" -eq 0 ]; then
+    toktx_params="--t2 --encode etc1s --clevel 5 --qlevel 255"
+    output_directory="KTX2"
+else
+    toktx_params="$(echo "$*" | sed -n 's/.*--t2 \(.*\)/\1/p')"
+    output_directory="$(echo "$*" | sed -n 's/.*--dir \([^ ]*\) --t2.*/\1/p')"
+fi
+
 # Initialize iteration counter
 iteration_count=0
 shopt -s lastpipe
@@ -18,7 +28,7 @@ root_directory="$(realpath "$script_directory/../../assets")"
 extensions=("png" "jpeg" "jpg")
 
 # Create "KTX2" directory if it doesn't exist
-ktx2_directory="$root_directory/KTX2"
+ktx2_directory="$root_directory/$output_directory"
 if [ ! -d "$ktx2_directory" ]; then
     mkdir -p "$ktx2_directory"
 	 echo "Create directory: $ktx2_directory"
@@ -47,7 +57,7 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
     # echo "Substring of the root directory: $substring_without_extension"
 	
 	# Extract the directory path from the substring
-    directory_path="$root_directory/KTX2$(dirname "$substring_without_extension")"
+    directory_path="$ktx2_directory$(dirname "$substring_without_extension")"
     # echo "Directory path: $directory_path"
 	
 	if [ ! -d "$directory_path" ]; then
@@ -56,11 +66,12 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 	fi
 	
 	# Concatenate root directory, "KTX2", and substring
-    new_path="$root_directory/KTX2$substring_without_extension.ktx2"
+    new_path="$ktx2_directory$substring_without_extension.ktx2"
 	echo "Encoding to KTX2..."
 	
 	# Run toktx.exe for the current file
-    "$script_directory/toktx.exe" --t2 --encode etc1s --clevel 5 --qlevel 255 "$new_path" "$file"
+    # Info: https://github.khronos.org/KTX-Software/ktxtools/ktxsc.html
+    "$script_directory/toktx.exe" $toktx_params "$new_path" "$file"
 	echo "Created file: $new_path"
 
     echo "------------------------"

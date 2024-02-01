@@ -7,7 +7,10 @@
         "dev": "cross-env TS_NODE_PROJECT=build/tsconfig.node.json NODE_ENV=development webpack serve --config build/webpack.ts",
         "lint": "tsc --build build/tsconfig.all.json && eslint --config build/eslintrc.js 'src/**/*'",
         "format": "prettier --write --config build/prettierrc.json 'src/**/*'",
-        "compress:ktx2": "sh ./build/compression/compressToKTX2.sh"
+        "ktx2:etc1s": "sh ./build/compression/compressToKTX2.sh --dir KTX2_ETC1S --t2 --encode etc1s --clevel 5 --qlevel 255",
+        "ktx2:uastc": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --zcmp 20 --uastc_quality 4",
+        "newKtx2:etc1s": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_ETC1S --encode etc1s --clevel 5 --qlevel 255",
+        "newKtx2:uastc": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --zcmp 20 --uastc_quality 4"
     },
     "author": "Kristof Van Der Haeghen",
     "license": "ISC",
@@ -62,8 +65,6 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
-        "@loaders.gl/core": "^3.3.1",
-        "@loaders.gl/textures": "^3.3.1",
         "@pixi/compressed-textures": "^7.3.3",
         "@pixi/core": "^7.3.3",
         "@types/stats": "^0.16.30",
@@ -73,9 +74,8 @@
         "fflate": "^0.8.0",
         "figlet": "^1.6.0",
         "js-to-ts-converter": "^0.18.2",
-        "ktx-parse": "^0.4.5",
         "lodash": "^4.17.21",
-        "pixi-basis-ktx2": "^0.0.15",
+        "pixi-basis-ktx2": "^0.0.17",
         "pixi.js": "^7.3.3",
         "stats.js": "^0.17.0",
         "three": "^0.148.0",
