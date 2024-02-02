@@ -64,8 +64,9 @@ export class Project implements IProject {
     public async createResources(): Promise<void> {
         const texturePaths = getTextureAssetPaths(this.ktx2Type);
         const length = texturePaths.length;
+        const timestamp = new Date().getTime();
         for (let i = 0; i < length; i++) {
-            const texturePath = this.href + texturePaths[i].replace('./','')
+            const texturePath = this.href + texturePaths[i].replace('./','') + `?${timestamp}`;
             try {
                 const pixiTexture = await Pixi.Assets.load(texturePath);
                 this.pixiTextures.push(pixiTexture);
@@ -87,8 +88,10 @@ export class Project implements IProject {
         });
 
         const length2 = assetsSoundPaths.length;
-        for (let j = 0; j < length2; j++) {
-            const sound = new Howl({ src: assetsSoundPaths[j], autoplay: false, loop: false, volume: 0.5 });
+        for (let i = 0; i < length2; i++) {
+            const timestamp = new Date().getTime();
+            const soundPath = this.href + assetsSoundPaths[i].replace('./','') + `?${timestamp}`;
+            const sound = new Howl({ src: soundPath, autoplay: false, loop: false, volume: 0.5 });
             this.howlSounds.push(sound);
         }
     }
@@ -208,7 +211,8 @@ export class Project implements IProject {
             this.disposeAll();
             const time1 = Date.now();
             const url = this.ktx2Type ? (this.ktx2Type === KTX2Types.ETC1S ? serverUrlKtx2Etc1s : serverUrlKtx2Uastc) : serverUrlNormal;
-            const data = await fetch(url).then(
+            const timestamp = new Date().getTime();
+            const data = await fetch(url + `?${timestamp}`).then(
                 (res) => res.arrayBuffer()
             );
             this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');

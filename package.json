@@ -1,6 +1,6 @@
 {
     "name": "zip-unzip-ktx2",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -8,9 +8,10 @@
         "lint": "tsc --build build/tsconfig.all.json && eslint --config build/eslintrc.js 'src/**/*'",
         "format": "prettier --write --config build/prettierrc.json 'src/**/*'",
         "ktx2:etc1s": "sh ./build/compression/compressToKTX2.sh --dir KTX2_ETC1S --t2 --encode etc1s --clevel 5 --qlevel 255",
-        "ktx2:uastc": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --zcmp 20 --uastc_quality 4",
+        "ktx2:uastc": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --uastc_quality 4 --zcmp 20",
+        "ktx2:uastc2": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC2 --t2 --encode uastc --uastc_quality 4 --zcmp 22 --uastc_rdo_l 4 --uastc_rdo_d 8196 --uastc_rdo_b 20.0 --uastc_rdo_s 20.0",
         "newKtx2:etc1s": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_ETC1S --encode etc1s --clevel 5 --qlevel 255",
-        "newKtx2:uastc": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --zcmp 20 --uastc_quality 4"
+        "newKtx2:uastc": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --uastc_quality 4 --zcmp 20"
     },
     "author": "Kristof Van Der Haeghen",
     "license": "ISC",
