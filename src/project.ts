@@ -1,4 +1,4 @@
-import * as Pixi from 'Pixi.js';
+import * as Pixi from 'pixi.js';
 import { ZippedResource } from './models/zippedResource';
 import { Howl } from 'howler';
 import _ from 'lodash';
@@ -6,26 +6,29 @@ import { BasisBinding, KTX2Parser, detectKTX2, loadBasis, loadKTX2, resolveKTX2T
 import { extensions } from '@pixi/core';
 import { assetsSoundPaths, getKTX2TypePath, getTextureAssetPaths, serverUrlKtx2Etc1s, serverUrlKtx2Uastc, serverUrlNormal } from './constants/constants';
 import { KTX2Types } from './types/compressionTypes';
+import { KTXTestView } from './ktxTestView';
 
 export interface IProject {
     launch(): void;
 }
 
 export class Project implements IProject {
-    public zipperResource: ZippedResource;
-    public container: Pixi.Container;
-    public canvasApp: Pixi.Application<HTMLCanvasElement>;
+    private zipperResource: ZippedResource;
+    private container: Pixi.Container;
+    private canvasApp: Pixi.Application<HTMLCanvasElement>;
 
-    public pixiTextures: Pixi.Texture<Pixi.Resource>[];
-    public pixiSprites: Pixi.Sprite[];
-    public howlSounds: Howl[];
+    private pixiTextures: Pixi.Texture<Pixi.Resource>[];
+    private pixiSprites: Pixi.Sprite[];
+    private howlSounds: Howl[];
 
-    public contentContainer: Pixi.Container;
-    public saveContainer: Pixi.Container;
-    public loadContainer: Pixi.Container;
-    public soundContainer: Pixi.Container;
-    public buttonTextMap: Map<string, Pixi.Text>;
-    public resultText?: Pixi.Text;
+    private contentContainer: Pixi.Container;
+    private saveContainer: Pixi.Container;
+    private loadContainer: Pixi.Container;
+    private soundContainer: Pixi.Container;
+    private buttonTextMap: Map<string, Pixi.Text>;
+    private resultText?: Pixi.Text;
+
+    private ktxTestViewer: KTXTestView = new KTXTestView();
 
     private ktx2Type?: KTX2Types;
     private isSaving = false;
@@ -36,12 +39,11 @@ export class Project implements IProject {
     public async launch(): Promise<void> {
         await this.loadKTX2Transcoder();
 
-        this.canvasApp = new Pixi.Application<HTMLCanvasElement>({ background: '#1099bb', powerPreference:'high-performance', width: 1920, height:1080  });
+        this.canvasApp = new Pixi.Application<HTMLCanvasElement>({ background: '#1099bb', powerPreference:'high-performance', width: window.innerWidth - 20, height:window.innerHeight - 20 });
         this.canvasApp.view.id = 'fflate-ktx2'
         this.container = new Pixi.Container();
         this.contentContainer = new Pixi.Container();
         this.buttonTextMap = new Map<string, Pixi.Text>();
-
         this.container.addChild(this.contentContainer);
 
         this.pixiSprites = [];
@@ -51,6 +53,13 @@ export class Project implements IProject {
         this.zipperResource = new ZippedResource();
         this.createButtons();
         document.body.appendChild(this.canvasApp.view);
+
+        window.addEventListener("resize", (event) => {
+            this.canvasApp.view.width =  window.innerWidth - 20;
+            this.canvasApp.view.height = window.innerHeight - 20 
+        });
+
+        this.ktxTestViewer.init(this.canvasApp);
     }
 
 
@@ -227,8 +236,14 @@ export class Project implements IProject {
         }); 
         
         this.resultText = this.createResultText('Logs:', 20, offset + height * 5).text;
-        this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
-            this.printUsageInfo();
+        // this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
+        //     this.printUsageInfo();
+        // });
+        this.createButton('KTX Quality Test', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, async () => {
+            this.disposeAll();
+            this.logResults('Loading KTX2 test...');
+           await this.ktxTestViewer.createTextures();
+           this.logResults('KTX2 test loaded!');
         });
     }
 
@@ -329,6 +344,7 @@ export class Project implements IProject {
     public disposeAll(): void {
         this.disposeSounds();
         this.disposeTextures();
+        this.ktxTestViewer.dispose();
     }
 
     public disposeSounds(): void {
@@ -350,13 +366,18 @@ export class Project implements IProject {
         this.pixiSprites.splice(0);
     }
 
-    public printUsageInfo(): void {
-        // Get the WebGL context
+    private getWebGLContext(): WebGLRenderingContext | WebGL2RenderingContext  {
         const canvas = document.getElementById("fflate-ktx2") as HTMLCanvasElement;
         let gl = canvas.getContext("webgl");
         if (!gl) {
             gl = canvas.getContext("webgl2");
         }
+        return gl!;
+    }
+
+    public printUsageInfo(): void {
+        // Get the WebGL context
+        let gl = this.getWebGLContext();
 
         if (!gl) {
             this.logResults("Unable to initialize WebGL. Your browser may not support it.");

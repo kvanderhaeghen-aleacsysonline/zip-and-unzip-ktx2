@@ -195,6 +195,19 @@ export const assetTexturePaths = [
     './assets/textureAtlas/score/scorePT.png',
 ];
 
+export const assetsKTXTestPaths = [
+    './assets/ktx_test/x2Portrait.png',
+    './assets/ktx_test/x2Portrait-etc1s.ktx2',
+    './assets/ktx_test/x2Portrait-etc1s3.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-high.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-mid3.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-high3.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-high4.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-mid3-zlib.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-high3-zlib.ktx2',
+    './assets/ktx_test/x2Portrait-uastc-high4-zlib.ktx2'
+];
+
 export const assetsSoundPaths = [
     './assets/variant/ogg/soundHowl/soundAmbientBonus.ogg',
     './assets/variant/ogg/soundHowl/soundAmbientMain.ogg',

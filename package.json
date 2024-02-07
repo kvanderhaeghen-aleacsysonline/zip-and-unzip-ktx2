@@ -8,10 +8,12 @@
         "lint": "tsc --build build/tsconfig.all.json && eslint --config build/eslintrc.js 'src/**/*'",
         "format": "prettier --write --config build/prettierrc.json 'src/**/*'",
         "ktx2:etc1s": "sh ./build/compression/compressToKTX2.sh --dir KTX2_ETC1S --t2 --encode etc1s --clevel 5 --qlevel 255",
-        "ktx2:uastc": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --uastc_quality 4 --zcmp 20",
-        "ktx2:uastc2": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC2 --t2 --encode uastc --uastc_quality 4 --zcmp 22 --uastc_rdo_l 4 --uastc_rdo_d 8196 --uastc_rdo_b 20.0 --uastc_rdo_s 20.0",
-        "newKtx2:etc1s": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_ETC1S --encode etc1s --clevel 5 --qlevel 255",
-        "newKtx2:uastc": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --uastc_quality 4 --zcmp 20"
+        "ktx2:uastc": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --uastc_quality 4 --zcmp 22 --uastc_rdo_l 4 --uastc_rdo_d 4096 --uastc_rdo_b 10.0 --uastc_rdo_s 18.0",
+        "ktx2:uastc-high": "sh ./build/compression/compressToKTX2.sh --dir KTX2_UASTC --t2 --encode uastc --uastc_quality 4 --zcmp 22 --uastc_rdo_l 1 --uastc_rdo_d 8192 --uastc_rdo_b 20.0 --uastc_rdo_s 20.0",
+        "new-ktx2:etc1s": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_ETC1S --encode basis-lz --format R8G8B8A8_SRGB --clevel 5 --qlevel 255",
+        "new-ktx2:uastc": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --format R8G8B8A8_SRGB --uastc-quality 4 --zstd 22 --uastc-rdo --uastc-rdo-l 4 --uastc-rdo-d 4096 --uastc-rdo-b 10.0 --uastc-rdo-s 18.0",
+        "new-ktx2:uastc-high": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --format R8G8B8A8_SRGB --uastc-quality 4 --zstd 22 --uastc-rdo --uastc-rdo-l 1 --uastc-rdo-d 8192 --uastc-rdo-b 20.0 --uastc-rdo-s 20.0",
+        "new-ktx2:uastc-high-zlib": "sh ./build/compression/compressToKTX2New.sh --dir KTX2_UASTC --encode uastc --format R8G8B8A8_SRGB --uastc-quality 4 --zlib 9 --uastc-rdo --uastc-rdo-l 1 --uastc-rdo-d 8192 --uastc-rdo-b 20.0 --uastc-rdo-s 20.0"
     },
     "author": "Kristof Van Der Haeghen",
     "license": "ISC",

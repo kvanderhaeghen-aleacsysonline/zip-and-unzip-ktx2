@@ -3,7 +3,7 @@ import * as fflate from 'fflate';
 import { Howl } from 'howler';
 import { BASIS_FORMAT_TO_INTERNAL_FORMAT, BASIS_FORMAT_TO_TYPE, BASIS_FORMATS, KTX2Parser, loadKTX2, TranscoderWorkerKTX2, loadKTX2BufferToTexture } from 'pixi-basis-ktx2';
 import { CompressedTextureResource } from '@pixi/compressed-textures'
-import * as Pixi from 'Pixi.js';
+import * as Pixi from 'pixi.js';
 import _ from 'lodash';
 
 type CompressionLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
