@@ -18,18 +18,18 @@ export class KTXTestView {
         app.stage.addChildAt(this.container, 0);
 
         // Mouse click movement
-        window.addEventListener('mousedown', (event) => {
+        window.addEventListener('pointerdown', (event) => {
             if (event.target === app.view) {
                 this.isDragging = true;
                 this.lastPosition = new Pixi.Point(event.clientX, event.clientY);
             }
         });
     
-        window.addEventListener('mouseup', () => {
+        window.addEventListener('pointerup', () => {
             this.isDragging = false;
         });
     
-        window.addEventListener('mousemove', (event) => {
+        window.addEventListener('pointermove', (event) => {
             this.mousePosition = new Pixi.Point(event.clientX, event.clientY);
             if (this.isDragging) {
                 const deltaX = this.mousePosition.x - this.lastPosition.x;
@@ -106,11 +106,11 @@ export class KTXTestView {
     public dispose(): void {
         for (let i = 0; i < this.sprites.length; i++) {
             this.sprites[i].removeFromParent();
-            delete this.sprites[i];
+            this.sprites[i].destroy();
         }
         for (let i = 0; i < this.texts.length; i++) {
             this.texts[i].removeFromParent();
-            delete this.texts[i];
+            this.texts[i].destroy();
         }
         this.sprites.splice(0);
         this.texts.splice(0);

@@ -12,13 +12,21 @@ export interface IProject {
     launch(): void;
 }
 
+export class NamedSprite extends Pixi.Sprite {
+    public name: string = '';
+
+    constructor() {
+        super();
+    }
+}
+
 export class Project implements IProject {
     private zipperResource: ZippedResource;
     private container: Pixi.Container;
     private canvasApp: Pixi.Application<HTMLCanvasElement>;
 
     private pixiTextures: Pixi.Texture<Pixi.Resource>[];
-    private pixiSprites: Pixi.Sprite[];
+    private pixiSprites: NamedSprite[];
     private howlSounds: Howl[];
 
     private contentContainer: Pixi.Container;
@@ -79,7 +87,9 @@ export class Project implements IProject {
             try {
                 const pixiTexture = await Pixi.Assets.load(texturePath);
                 this.pixiTextures.push(pixiTexture);
-                const pixiSprite = new Pixi.Sprite(pixiTexture);
+                const pixiSprite = new Pixi.Sprite(pixiTexture) as NamedSprite;
+                pixiSprite.name = texturePaths[i];
+                this.makeDraggableSprite(pixiSprite);
                 this.pixiSprites.push(pixiSprite);
                 pixiSprite.position.set(
                     _.random(pixiTexture.width * 0.5, this.canvasApp.screen.width - pixiTexture.width * 0.5),
@@ -155,9 +165,11 @@ export class Project implements IProject {
             this.logResults(this.ktxBtnTxt);
 
             if (this.ktx2Type) {
-                const texture: Pixi.Texture = await Pixi.Assets.load(this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2');
+                const url = this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2';
+                const texture: Pixi.Texture = await Pixi.Assets.load(url);
                 this.pixiTextures.push(texture);
-                const sprite = new Pixi.Sprite(texture);
+                const sprite = new Pixi.Sprite(texture) as NamedSprite;
+                sprite.name = 'KTX.ktx2';
                 sprite.position.set(
                     _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
                     _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
@@ -323,7 +335,9 @@ export class Project implements IProject {
             }
 
             this.pixiTextures.push(texture);
-            const sprite = new Pixi.Sprite(texture);
+            const sprite = new Pixi.Sprite(texture) as NamedSprite;
+            sprite.name = texturePaths[i];
+            this.makeDraggableSprite(sprite);
             sprite.position.set(
                 _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
                 _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
@@ -338,6 +352,38 @@ export class Project implements IProject {
                 continue;
             }
             this.howlSounds.push(audio);
+        }
+    }
+
+    private makeDraggableSprite(sprite: Pixi.Sprite): void {
+        sprite.anchor.set(0.5);
+        sprite.interactive = true;
+        sprite.on('pointerdown', this.onDragStart, sprite)
+            .on('pointerup', this.onDragEnd, sprite)
+            .on('pointerupoutside', this.onDragEnd, sprite)
+            .on('pointermove', this.onDragMove, sprite);
+    }
+    private dragTarget?: any;
+    private tooltipText?: Pixi.Text;
+    private onDragStart(): void {
+        this.dragTarget = this;
+        const container =  this.dragTarget.parent as Pixi.Container;
+        container?.setChildIndex(this.dragTarget, container.children.length - 1);
+
+        const sprite = (this.dragTarget as NamedSprite);
+        this.tooltipText = new Pixi.Text(sprite.name, { fontSize: 15, fill: 'white', align: 'center' });
+        this.tooltipText.anchor.set(0.5);
+        this.tooltipText.position.set(0, -15);
+        sprite.addChild(this.tooltipText);
+    }
+    private onDragEnd(): void {
+        this.dragTarget = undefined;
+        this.tooltipText?.destroy();
+        this.tooltipText = undefined;
+    }
+    private onDragMove(event: Pixi.FederatedPointerEvent): void {
+        if (this.dragTarget) {
+            this.dragTarget.parent?.toLocal(event.global, null, this.dragTarget.position);
         }
     }
 
@@ -360,7 +406,7 @@ export class Project implements IProject {
             Pixi.Texture.removeFromCache(this.pixiTextures[i]);
             delete this.pixiTextures[i];
             this.pixiSprites[i].removeFromParent();
-            delete this.pixiSprites[i];
+            this.pixiSprites[i].destroy();
         }
         this.pixiTextures.splice(0);
         this.pixiSprites.splice(0);
