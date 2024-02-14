@@ -1,7 +1,10 @@
 import * as Pixi from 'pixi.js';
 import { assetsKTXTestPaths } from './constants/constants';
+import _ from 'lodash';
+import { KTX2Types } from './types/compressionTypes';
 
 export class KTXTestView {
+    private canvasApp: Pixi.Application;
     private container: Pixi.Container = new Pixi.Container();
     private lastPosition: Pixi.Point;
     private mousePosition: Pixi.Point;
@@ -14,6 +17,7 @@ export class KTXTestView {
     private isDragging = false;
 
     public init(app: Pixi.Application): void {
+        this.canvasApp = app;
         this.container.interactive = true;
         app.stage.addChildAt(this.container, 0);
 
@@ -93,6 +97,22 @@ export class KTXTestView {
             });
             res();
         });
+    }
+
+    public async createTestSprites (spriteCount: number, type?: KTX2Types): Promise<void> {
+        for (let i = 0; i < spriteCount; i++) {
+            const path = type === undefined ? assetsKTXTestPaths[0] : (type === KTX2Types.ETC1S ? assetsKTXTestPaths[1]: assetsKTXTestPaths[4]);
+            const texture = await Pixi.Assets.load(path);
+            const sprite = new Pixi.Sprite(texture);
+            sprite.scale.set(0.1);
+            sprite.anchor.set(0.5);
+            sprite.position.set(
+                _.random(texture.width * 0.05, this.canvasApp.screen.width - texture.width * 0.05),
+                _.random(texture.height * 0.05, this.canvasApp.screen.height - texture.height * 0.05));
+    
+            this.container.addChild(sprite);
+            this.sprites.push(sprite);
+        };
     }
 
     private async getFileSize(path: string):  Promise<number>{
