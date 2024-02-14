@@ -7,10 +7,10 @@ start_time_seconds=$SECONDS
 # Parse command-line parameters or set default values
 # ----> Use --dir to give the directory to export the files to <----
 if [ "$#" -eq 0 ]; then
-    toktx_params="--t2 --encode etc1s --clevel 5 --qlevel 255"
-    output_directory="KTX2"
+    toktx_params="--encode basis-lz --clevel 5 --qlevel 255"
+    output_directory="KTX2_ETC1S"
 else
-    toktx_params="$(echo "$*" | sed -n 's/.*--encode \(.*\)/\1/p')"
+    toktx_params="$(echo "$*" | sed -n 's/.*--encode \(.*\)/--encode \1/p')"
     output_directory="$(echo "$*" | sed -n 's/.*--dir \([^ ]*\) --encode.*/\1/p')"
 fi
 
@@ -71,7 +71,8 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 	
 	# Run toktx.exe for the current file
     # Info: https://github.khronos.org/KTX-Software/ktxtools/ktxsc.html
-    "$script_directory/ktx.exe create" $toktx_params "$new_path" "$file"
+    echo "$script_directory/ktx.exe" create $toktx_params "$file" "$new_path"
+    "$script_directory/ktx.exe" create $toktx_params "$file" "$new_path"
 	echo "Created file: $new_path"
 
     echo "------------------------"

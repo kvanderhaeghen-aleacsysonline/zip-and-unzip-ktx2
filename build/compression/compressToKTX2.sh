@@ -8,7 +8,7 @@ start_time_seconds=$SECONDS
 # ----> Use --dir to give the directory to export the files to <----
 if [ "$#" -eq 0 ]; then
     toktx_params="--t2 --encode etc1s --clevel 5 --qlevel 255"
-    output_directory="KTX2"
+    output_directory="KTX2_ETC1S"
 else
     toktx_params="$(echo "$*" | sed -n 's/.*--t2 \(.*\)/\1/p')"
     output_directory="$(echo "$*" | sed -n 's/.*--dir \([^ ]*\) --t2.*/\1/p')"

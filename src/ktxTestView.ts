@@ -1,7 +1,8 @@
 import * as Pixi from 'pixi.js';
-import { assetsKTXTestPaths } from './constants/constants';
+import { animTestPath, assetsKTXTestPaths, getAnimationAssetPaths } from './constants/constants';
 import _ from 'lodash';
 import { KTX2Types } from './types/compressionTypes';
+import { wait } from './utils/wait';
 
 export class KTXTestView {
     private canvasApp: Pixi.Application;
@@ -113,6 +114,38 @@ export class KTXTestView {
             this.container.addChild(sprite);
             this.sprites.push(sprite);
         };
+    }
+
+    public async createTestAnimation(spriteCount: number, type?: KTX2Types, animationSpeed = 1.0): Promise<void> {
+        const spritePaths = getAnimationAssetPaths(type);
+        const textureArray: Pixi.Texture[] = [];
+        for (let i = 0; i < spritePaths.length; i++) {
+            const texture = await Pixi.Assets.load<Pixi.Texture>(spritePaths[i]);
+            texture.textureCacheIds = [spritePaths[i]];
+            (texture as any).texture = texture;
+            console.error(texture instanceof Pixi.Texture);
+            textureArray.push(texture);
+        }
+
+        for (let i = 0; i < 1; i++) {
+            //this._textureID = -1, this._textureTrimmedID = -1, this._cachedTint = 16777215, this.uvs = this._texture._uvs.uvsFloat32, this.updateAnchor && this._anchor.copyFrom(this._texture.defaultAnchor), this.onFrameChange && this.onFrameChange(this.currentFrame))
+            // textureArray.forEach((tex) => console.error(tex._uvs, tex._uvs.uvsFloat32));
+            const sprite = new Pixi.AnimatedSprite(textureArray);
+            console.error(i);
+            // console.error(i, logSprite._uvs.uvsFloat32, logSprite._previousFrame, logSprite._texture, logSprite._textureID, logSprite._textureTrimmedID, logSprite._cachedTint, logSprite.updateAnchor, logSprite._anchor, logSprite.onFrameChange);
+            sprite.scale.set(0.1);
+            sprite.anchor.set(0.5);
+            sprite.position.set(
+                _.random(sprite.width * 0.05, this.canvasApp.screen.width - sprite.width * 0.05),
+                _.random(sprite.height * 0.05, this.canvasApp.screen.height - sprite.height * 0.05));
+            sprite.autoUpdate = true;
+            sprite.loop = true;
+            sprite.animationSpeed = animationSpeed;
+            sprite.play();
+
+            this.container.addChild(sprite);
+            this.sprites.push(sprite);
+        }
     }
 
     private async getFileSize(path: string):  Promise<number>{

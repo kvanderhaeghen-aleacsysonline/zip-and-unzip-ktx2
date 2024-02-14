@@ -260,11 +260,18 @@ export class Project implements IProject {
             this.logResults('KTX2 test loaded!');
         });
 
-        this.createButton('Add test sprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
+        // this.createButton('Add test sprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
+        //     const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
+        //     this.logResults(`Loading 1000 ${imageExt} sprites...`);
+        //     await this.ktxTestViewer.createTestSprites(1000, this.ktx2Type);
+        //     this.logResults(`${imageExt} sprites loaded!`);
+        // });
+
+        this.createButton('Anim test', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
             const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
-            this.logResults(`Loading 1000 ${imageExt} sprites...`);
-            await this.ktxTestViewer.createTestSprites(1000, this.ktx2Type);
-            this.logResults('KTX2 sprites loaded!');
+            this.logResults(`Loading 1000 ${imageExt} animation...`);
+            await this.ktxTestViewer.createTestAnimation(1000, this.ktx2Type, 0.4);
+            this.logResults(`${imageExt} animation loaded!`);
         });
     }
 

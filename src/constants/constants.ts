@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { KTX2Types } from "../types/compressionTypes";
 
 export const assetKtxEtc1sPath = './assets/KTX2_ETC1S'
@@ -196,17 +197,23 @@ export const assetTexturePaths = [
 ];
 
 export const assetsKTXTestPaths = [
-    './assets/ktx_test/x2Portrait.png',
-    './assets/ktx_test/x2Portrait-etc1s.ktx2',
-    './assets/ktx_test/x2Portrait-etc1s3.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-high.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-mid3.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-high3.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-high4.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-mid3-zlib.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-high3-zlib.ktx2',
-    './assets/ktx_test/x2Portrait-uastc-high4-zlib.ktx2'
+    './assets/ktxTest/x2Portrait.png',
+    './assets/ktxTest/x2Portrait-etc1s.ktx2',
+    './assets/ktxTest/x2Portrait-etc1s3.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-high.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-mid3.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-high3.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-high4.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-mid3-zlib.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-high3-zlib.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-high4-zlib.ktx2'
 ];
+
+export const animTestPath = {
+    path: './assets/animTest/anematicDragonFire',
+    ext: 'jpg',
+    length: 16
+}
 
 export const assetsSoundPaths = [
     './assets/variant/ogg/soundHowl/soundAmbientBonus.ogg',
@@ -320,4 +327,12 @@ export function getTextureAssetPaths(ktx2Type?: KTX2Types): string[] {
         return assetTexturePaths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g,'ktx2'));
     }
     return assetTexturePaths
+}
+export function getAnimationAssetPaths(ktx2Type?: KTX2Types): string[] {
+    const paths = _.times(animTestPath.length, (index) => `${animTestPath.path}${index + 1}.${animTestPath.ext}`);
+    if (ktx2Type) {
+        const texturePath = getKTX2TypePath(ktx2Type);
+        return paths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g,'ktx2'));
+    }
+    return paths;
 }

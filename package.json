@@ -68,8 +68,6 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
-        "@pixi/compressed-textures": "^7.3.3",
-        "@pixi/core": "^7.3.3",
         "@types/stats": "^0.16.30",
         "@types/three": "^0.146.0",
         "commander": "^10.0.1",
@@ -79,7 +77,7 @@
         "js-to-ts-converter": "^0.18.2",
         "lodash": "^4.17.21",
         "pixi-basis-ktx2": "^0.0.17",
-        "pixi.js": "^7.3.3",
+        "pixi.js": "^7.x.x",
         "stats.js": "^0.17.0",
         "three": "^0.148.0",
         "zstddec": "^0.0.2"
