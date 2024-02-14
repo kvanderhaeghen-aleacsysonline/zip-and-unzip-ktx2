@@ -116,11 +116,11 @@ export class Project implements IProject {
     }
 
     private createButtons(): void {
-        const offset = 32;
+        const offset = 20;
         const width = 128;
-        const height = 64;
+        const height = 48;
         const scaleW = width * 1.5;
-        const scaleH = 64;
+        const scaleH = 56;
         
         this.createButton('Save', this.saveContainer, 20, offset, scaleW, scaleH, async () => {
             if (this.isSaving) return;
@@ -247,20 +247,20 @@ export class Project implements IProject {
             this.updateButtonText('Load server zip', 'Load server');
         }); 
         
-        this.resultText = this.createResultText('Logs:', 20, offset + height * 5).text;
+        this.resultText = this.createResultText('Logs:', 20, offset + height * 6).text;
 
         // this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
         //     this.printUsageInfo();
         // });
 
-        // this.createButton('KTX Quality Test', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, async () => {
-        //     this.disposeAll();
-        //     this.logResults('Loading KTX2 test...');
-        //     await this.ktxTestViewer.createTextures();
-        //     this.logResults('KTX2 test loaded!');
-        // });
+        this.createButton('KTX Quality Test', this.loadContainer, 20, offset + height * 4.5, scaleW, scaleH, async () => {
+            this.disposeAll();
+            this.logResults('Loading KTX2 test...');
+            await this.ktxTestViewer.createTextures();
+            this.logResults('KTX2 test loaded!');
+        });
 
-        this.createButton('Add Sprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, async () => {
+        this.createButton('Add test sprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
             const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
             this.logResults(`Loading 1000 ${imageExt} sprites...`);
             await this.ktxTestViewer.createTestSprites(1000, this.ktx2Type);

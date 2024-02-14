@@ -5,7 +5,7 @@ import Webpack from 'webpack';
 import { Config } from './webpack.utils';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
-import CompressionPlugin from 'compression-webpack-plugin';
+// import CompressionPlugin from 'compression-webpack-plugin';
 import Ip from 'ip';
 import os from 'os';
 
@@ -84,15 +84,15 @@ const config: Webpack.Configuration = {
             
         }),
         new nodePolyfillPlugin(),
-        new CompressionPlugin({
-            algorithm: 'brotliCompress',
-            filename: '[name].br[query]',
-            test: /\.(js|css|html|svg)$/,
-            compressionOptions: { level: 6 },
-            threshold: 10240,
-            minRatio: 0.8,
-            deleteOriginalAssets: false,
-        }),
+        // new CompressionPlugin({
+        //     algorithm: 'brotliCompress',
+        //     filename: '[name].br[query]',
+        //     test: /\.(js|css|html|svg)$/,
+        //     compressionOptions: { level: 6 },
+        //     threshold: 10240,
+        //     minRatio: 0.8,
+        //     deleteOriginalAssets: false,
+        // }),
     ],
     output: {
         filename: Config.outFileName,
