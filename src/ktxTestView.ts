@@ -26,7 +26,7 @@ export class KTXTestView {
 
         // Mouse click movement
         window.addEventListener('pointerdown', (event) => {
-            if (event.target === app.view) {
+            if (event.target === app.canvas) {
                 this.isDragging = true;
                 this.lastPosition = new Pixi.Point(event.clientX, event.clientY);
             }
@@ -105,7 +105,7 @@ export class KTXTestView {
             (sprite as Pixi.AnimatedSprite).animationSpeed = animationSpeed;
             (sprite as Pixi.AnimatedSprite).play();
         } else {
-            const texture = new Pixi.Texture(await Pixi.Assets.load<Pixi.BaseTexture>(path));
+            const texture = await Pixi.Assets.load<Pixi.Texture>(path);
             sprite = new Pixi.Sprite(texture);
             this.testObjects.sprites.push(sprite as Pixi.Sprite);
         }
@@ -124,7 +124,15 @@ export class KTXTestView {
         const currentPath = Array.isArray(path) ? path[0] : path;
         const frameCount = Array.isArray(path) ? path.length : 1;
         const fileSize = (await this.getFileSize(currentPath)) * frameCount;
-        const text = new Pixi.Text(`${currentPath}\nSize: ${fileSize.toFixed(2)} Kb`, { fill: 'white', align: 'center', fontSize: 26, stroke: 'black', strokeThickness: 2 });
+        const text = new Pixi.Text({
+            text: `${currentPath}\nSize: ${fileSize.toFixed(2)} Kb`,
+            style: { 
+                fill: 'white',
+                align: 'center',
+                fontSize: 26,
+                stroke: 'black' 
+            }
+        });
         text.anchor.set(0.5);
         text.position.set(sprite.x, sprite.y - sprite.height / 2 + 25); // Adjust the offset as needed
         this.container.addChild(text);
@@ -175,7 +183,7 @@ export class KTXTestView {
         for (let i = 0; i < paths.length; i++) {
              // To avoid Pixi.Texture being another instance, we need to create a new texture from a loaded base texture for our KTX2 texture. 
              // This way the object was made with the same constructor instead of another one, because of it being seen as another instance.
-            const texture = new Pixi.Texture((await Pixi.Assets.load<Pixi.BaseTexture>(paths[i])));
+            const texture = (await Pixi.Assets.load<Pixi.Texture>(paths[i]));
             textureArray.push(texture);
         }
         return Promise.resolve(textureArray);

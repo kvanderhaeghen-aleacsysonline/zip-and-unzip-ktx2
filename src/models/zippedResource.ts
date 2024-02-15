@@ -115,7 +115,7 @@ export class ZippedResource {
         const byteArr = this.unzipResource(fileName);
         if (!byteArr) return undefined;
 
-        return loadKTX2BufferToTexture(byteArr!, fileName, Pixi.Assets.loader);
+        return Pixi.Texture.from({ resource: byteArr, width: 512, height: 512 })
     }
 
     public getAudio(path: string): Howl {

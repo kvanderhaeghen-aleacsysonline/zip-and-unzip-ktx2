@@ -2,7 +2,7 @@ import * as Pixi from 'pixi.js';
 import { ZippedResource } from './models/zippedResource';
 import { Howl } from 'howler';
 import _ from 'lodash';
-import { KTX2Parser, detectKTX2, loadKTX2, resolveKTX2TextureUrl } from 'pixi-basis-ktx2';
+import { KTX2Parser } from 'pixi-basis-ktx2';
 import { assetsSoundPaths, getKTX2TypePath, getTextureAssetPaths, serverUrlKtx2Etc1s, serverUrlKtx2Uastc, serverUrlNormal } from './constants/constants';
 import { KTX2Types } from './types/compressionTypes';
 import { KTXTestView } from './ktxTestView';
@@ -11,21 +11,13 @@ export interface IProject {
     launch(): void;
 }
 
-export class NamedSprite extends Pixi.Sprite {
-    public name: string = '';
-
-    constructor() {
-        super();
-    }
-}
-
 export class Project implements IProject {
     private zipperResource: ZippedResource;
     private container: Pixi.Container;
-    private canvasApp: Pixi.Application<HTMLCanvasElement>;
+    private canvasApp: Pixi.Application;
 
-    private pixiTextures: Pixi.Texture<Pixi.Resource>[];
-    private pixiSprites: NamedSprite[];
+    private pixiTextures: Pixi.Texture[];
+    private pixiSprites: Pixi.Sprite[];
     private howlSounds: Howl[];
 
     private contentContainer: Pixi.Container;
@@ -47,8 +39,14 @@ export class Project implements IProject {
     public async launch(): Promise<void> {
         await this.loadKTX2Transcoder();
 
-        this.canvasApp = new Pixi.Application<HTMLCanvasElement>({ background: '#1099bb', powerPreference:'high-performance', width: window.innerWidth - 20, height:window.innerHeight - 20 });
-        this.canvasApp.view.id = 'fflate-ktx2'
+        this.canvasApp = new Pixi.Application();
+        await this.canvasApp.init({ 
+            background: '#1099bb', 
+            powerPreference:'high-performance', 
+            width: window.innerWidth - 20,
+            height:window.innerHeight - 20,
+        });
+        this.canvasApp.canvas.id = 'fflate-ktx2'
         this.container = new Pixi.Container();
         this.contentContainer = new Pixi.Container();
         this.buttonTextMap = new Map<string, Pixi.Text>();
@@ -60,11 +58,11 @@ export class Project implements IProject {
         this.canvasApp.stage.addChild(this.container);
         this.zipperResource = new ZippedResource();
         this.createButtons();
-        document.body.appendChild(this.canvasApp.view);
+        document.body.appendChild(this.canvasApp.canvas);
 
         window.addEventListener("resize", (event) => {
-            this.canvasApp.view.width =  window.innerWidth - 20;
-            this.canvasApp.view.height = window.innerHeight - 20 
+            this.canvasApp.canvas.width =  window.innerWidth - 20;
+            this.canvasApp.canvas.height = window.innerHeight - 20;
         });
 
         this.ktxTestViewer.init(this.canvasApp);
@@ -72,10 +70,10 @@ export class Project implements IProject {
 
 
     public async loadKTX2Transcoder(): Promise<void> {
-        await KTX2Parser.loadTranscoder(this.href + '/basis_transcoder.js', this.href + '/basis_transcoder.wasm');
-        Pixi.Assets.detections.push(detectKTX2);
-        Pixi.Assets.loader.parsers.push(loadKTX2);
-        Pixi.Assets.resolver.parsers.push(resolveKTX2TextureUrl);
+        // await KTX2Parser.loadTranscoder(this.href + '/basis_transcoder.js', this.href + '/basis_transcoder.wasm');
+        // Pixi.Assets.detections.push(detectKTX2);
+        // Pixi.Assets.loader.parsers.push(loadKTX2);
+        // Pixi.Assets.resolver.parsers.push(resolveKTX2TextureUrl);
     }
 
     private createButtons(): void {
@@ -142,13 +140,15 @@ export class Project implements IProject {
 
             if (this.ktx2Type) {
                 const url = this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2';
-                const texture: Pixi.Texture = await Pixi.Assets.load(url);
+                // const texture = await Pixi.Assets.load<Pixi.Texture>(url);
+                const texture = await Pixi.Assets.load<Pixi.Texture>(url);
+                console.error(texture);
                 this.pixiTextures.push(texture);
-                const sprite = new Pixi.Sprite(texture) as NamedSprite;
-                sprite.name = 'KTX.ktx2';
+                const sprite = new Pixi.Sprite(texture);
+                sprite.label = 'KTX.ktx2';
                 sprite.position.set(
-                    _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
-                    _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
+                    _.random(sprite.width * 0.5, this.canvasApp.screen.width - sprite.width * 0.5),
+                    _.random(sprite.height * 0.5, this.canvasApp.screen.height - sprite.height * 0.5)
                 );
                 this.pixiSprites.push(sprite);
                 this.contentContainer.addChild(sprite);
@@ -293,15 +293,19 @@ export class Project implements IProject {
 
     private createButton(name: string, container: Pixi.Container, x: number, y: number, w: number, h: number, fontSize: number, callback: () => void): { button:  Pixi.Container, text: Pixi.Text } {
         const g1 = new Pixi.Graphics();
-        g1.beginFill(0x000000, 0.9);
-        g1.drawRect(0, 0, w, h);
-        g1.endFill();
+        const gradient = new Pixi.FillGradient(0, 0, w, h); 
+        gradient.addColorStop(0, 0x000000);
+        gradient.addColorStop(1, 0x333333);
+        g1.roundRect(0, 0, w, h, 5).fill(gradient);
 
-        const text = new Pixi.Text(name, {
-            fontFamily: 'Arial',
-            fontSize: fontSize,
-            fill: 0xffffff,
-            align: 'center',
+        const text = new Pixi.Text({
+            text: name,
+            style: {
+                fontFamily: 'Arial',
+                fontSize: fontSize,
+                fill: 0xffffff,
+                align: 'center',
+            }
         });
         text.anchor.set(0.5, 0.5);
         text.position.set(w * 0.5, h * 0.5);
@@ -325,12 +329,15 @@ export class Project implements IProject {
     }
 
     private createResultText(name: string, x: number, y: number): { text: Pixi.Text } {
-        const text = new Pixi.Text(name, {
-            fontFamily: 'Arial',
-            fontSize: 20,
-            fill: 0xffffff,
-            strokeThickness: 4,
-            align: 'left',
+        const text = new Pixi.Text({
+            text: name,
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 20,
+                fill: 0xffffff,
+                stroke: 'black',
+                align: 'left',
+            }
         });
         text.position.set(x, y);
 
@@ -349,8 +356,8 @@ export class Project implements IProject {
             try {
                 const pixiTexture = await Pixi.Assets.load(texturePath);
                 this.pixiTextures.push(pixiTexture);
-                const pixiSprite = new Pixi.Sprite(pixiTexture) as NamedSprite;
-                pixiSprite.name = texturePaths[i];
+                const pixiSprite = new Pixi.Sprite(pixiTexture);
+                pixiSprite.label = texturePaths[i];
                 this.makeDraggableSprite(pixiSprite);
                 this.pixiSprites.push(pixiSprite);
                 pixiSprite.position.set(
@@ -389,8 +396,8 @@ export class Project implements IProject {
             }
 
             this.pixiTextures.push(texture);
-            const sprite = new Pixi.Sprite(texture) as NamedSprite;
-            sprite.name = texturePaths[i];
+            const sprite = new Pixi.Sprite(texture);
+            sprite.label = texturePaths[i];
             this.makeDraggableSprite(sprite);
             sprite.position.set(
                 _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
@@ -424,8 +431,15 @@ export class Project implements IProject {
         const container =  this.dragTarget.parent as Pixi.Container;
         container?.setChildIndex(this.dragTarget, container.children.length - 1);
 
-        const sprite = (this.dragTarget as NamedSprite);
-        this.tooltipText = new Pixi.Text(sprite.name, { fontSize: 15, fill: 'white', align: 'center' });
+        const sprite = this.dragTarget;
+        this.tooltipText = new Pixi.Text({
+            text: sprite.label,
+            style: {
+                fontSize: 15,
+                fill: 'white',
+                align: 'center'
+            }
+        });
         this.tooltipText.anchor.set(0.5);
         this.tooltipText.position.set(0, -15);
         sprite.addChild(this.tooltipText);
@@ -457,7 +471,6 @@ export class Project implements IProject {
 
     public disposeTextures(): void {
         for (let i = 0; i < this.pixiTextures.length; i++) {
-            Pixi.Texture.removeFromCache(this.pixiTextures[i]);
             delete this.pixiTextures[i];
             this.pixiSprites[i].removeFromParent();
             this.pixiSprites[i].destroy();
