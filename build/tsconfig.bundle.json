@@ -2,7 +2,7 @@
     "extends": "./tsconfig.base",
     "compilerOptions": {
         "module": "ESNext",
-        "target": "ES6",
+        "target": "ESNext",
         "allowJs": true
     }
 }

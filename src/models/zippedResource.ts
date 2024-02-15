@@ -1,8 +1,6 @@
-import { ALPHA_MODES, BufferResource, FORMATS, MIPMAP_MODES, Resource, TYPES } from '@pixi/core';
 import * as fflate from 'fflate';
 import { Howl } from 'howler';
-import { BASIS_FORMAT_TO_INTERNAL_FORMAT, BASIS_FORMAT_TO_TYPE, BASIS_FORMATS, KTX2Parser, loadKTX2, TranscoderWorkerKTX2, loadKTX2BufferToTexture } from 'pixi-basis-ktx2';
-import { CompressedTextureResource } from '@pixi/compressed-textures'
+import { loadKTX2BufferToTexture } from 'pixi-basis-ktx2';
 import * as Pixi from 'pixi.js';
 import _ from 'lodash';
 

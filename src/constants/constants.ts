@@ -204,9 +204,9 @@ export const assetsKTXTestPaths = [
     './assets/ktxTest/x2Portrait-uastc-mid3.ktx2',
     './assets/ktxTest/x2Portrait-uastc-high3.ktx2',
     './assets/ktxTest/x2Portrait-uastc-high4.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-mid3-zlib.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-high3-zlib.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-high4-zlib.ktx2'
+    // './assets/ktxTest/x2Portrait-uastc-mid3-zlib.ktx2', // zlib not yet supported in current ktx2 library
+    // './assets/ktxTest/x2Portrait-uastc-high3-zlib.ktx2',
+    // './assets/ktxTest/x2Portrait-uastc-high4-zlib.ktx2'
 ];
 
 export const animTestPath = {

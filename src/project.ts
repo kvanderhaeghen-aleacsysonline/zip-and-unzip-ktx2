@@ -2,8 +2,7 @@ import * as Pixi from 'pixi.js';
 import { ZippedResource } from './models/zippedResource';
 import { Howl } from 'howler';
 import _ from 'lodash';
-import { BasisBinding, KTX2Parser, detectKTX2, loadBasis, loadKTX2, resolveKTX2TextureUrl } from 'pixi-basis-ktx2';
-import { extensions } from '@pixi/core';
+import { KTX2Parser, detectKTX2, loadKTX2, resolveKTX2TextureUrl } from 'pixi-basis-ktx2';
 import { assetsSoundPaths, getKTX2TypePath, getTextureAssetPaths, serverUrlKtx2Etc1s, serverUrlKtx2Uastc, serverUrlNormal } from './constants/constants';
 import { KTX2Types } from './types/compressionTypes';
 import { KTXTestView } from './ktxTestView';
@@ -41,6 +40,7 @@ export class Project implements IProject {
     private ktx2Type?: KTX2Types;
     private isSaving = false;
     private isLoading = false;
+    private isSpritesTest = false;
     private ktxBtnTxt = 'KTX2 Disabled';
     private href = window.location.origin + window.location.pathname.replace('index.html','');
 
@@ -78,6 +78,268 @@ export class Project implements IProject {
         Pixi.Assets.resolver.parsers.push(resolveKTX2TextureUrl);
     }
 
+    private createButtons(): void {
+        const offset = 20;
+        const width = 128;
+        const height = 48;
+        const scaleW = width * 1.5;
+        const scaleH = 56;
+        
+        this.createButton('Save', this.saveContainer, 20, offset, scaleW, scaleH, 24, async () => {
+            if (this.isSaving) return;
+            this.isSaving = true;
+            this.isSpritesTest = false;
+            this.disposeAll();
+            this.zipperResource.resetZip();
+
+            const addon = this.ktx2Type ? "[Has KTX2 textures: " + this.ktx2Type?.toUpperCase() + "]" : "";
+            this.logResults('Saving... ' + addon);
+            this.updateButtonText('Save', 'saving...');
+            const time1 = Date.now();
+            const texturePaths = getTextureAssetPaths(this.ktx2Type);
+            const length = texturePaths.length;
+            for (let i = 0; i < length; i++) {
+                await this.zipperResource.zipResource(texturePaths[i]);
+            }
+            for (let j = 0; j < assetsSoundPaths.length; j++) {
+                await this.zipperResource.zipResource(assetsSoundPaths[j]);
+            }
+
+            this.zipperResource.download();
+            this.isSaving = false;
+            this.logResults('Saved in ', Date.now() - time1, ' ms');
+            this.updateButtonText('Save', 'Save');
+        });
+
+        this.createButton('Sound', this.loadContainer, 20 + scaleW + offset, offset, scaleW  * 0.45, scaleH, 24, async () => {
+            _.sample(this.howlSounds)?.play();
+        });
+
+        this.createButton('Clear\nAll', this.loadContainer, 20 + scaleW + (scaleW  * 0.45) + (offset * 2), offset, scaleW  * 0.45, scaleH, 20, async () => {
+            this.isSpritesTest = false;
+            this.disposeAll();
+            this.zipperResource.resetUnzip();
+            this.zipperResource.resetZip();
+            this.resultText!.text = 'Logs:';
+            this.logResults('Cleared all sprites & logs');
+        });
+
+        const ktx2Btn = this.createButton(this.ktxBtnTxt, this.loadContainer, 20, offset + height * 1.5 , scaleW, scaleH, 24, async () => {
+            this.isSpritesTest = false;
+            this.disposeAll();
+
+            if (!this.ktx2Type) {
+                this.ktx2Type = KTX2Types.ETC1S;
+            } else if (this.ktx2Type === KTX2Types.ETC1S) {
+                this.ktx2Type = KTX2Types.UASTC;
+            } else {
+                this.ktx2Type = undefined;
+            }
+
+            this.ktxBtnTxt = this.ktx2Type ? 'KTX2 ' + this.ktx2Type?.toUpperCase() : 'KTX2 Disabled';
+            ktx2Btn.text.text = this.ktxBtnTxt;
+            this.logResults(this.ktxBtnTxt);
+
+            if (this.ktx2Type) {
+                const url = this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2';
+                const texture: Pixi.Texture = await Pixi.Assets.load(url);
+                this.pixiTextures.push(texture);
+                const sprite = new Pixi.Sprite(texture) as NamedSprite;
+                sprite.name = 'KTX.ktx2';
+                sprite.position.set(
+                    _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
+                    _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
+                );
+                this.pixiSprites.push(sprite);
+                this.contentContainer.addChild(sprite);
+            }
+        });
+
+        this.createButton('Load normal', this.soundContainer, 20  + scaleW + offset, offset + height * 1.5 , scaleW, scaleH, 24, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            this.isSpritesTest = false;
+            this.disposeAll();
+            this.zipperResource.resetUnzip();
+            this.logResults('Loading...');
+            this.updateButtonText('Load normal', 'loading...');
+            
+            const time1 = Date.now();
+            await this.createResources();
+            this.isLoading = false;
+            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type?.toUpperCase() :'PNG/JPEG'
+            this.logResults(`Total time loading files from assets [${imageExt}] `, Date.now() - time1, 'ms');
+            this.updateButtonText('Load normal', 'Load normal');
+        });
+
+        this.createButton('Load local zip', this.soundContainer, 20, offset + height * 3 , scaleW, scaleH, 24, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            this.isSpritesTest = false;
+            this.disposeAll();
+            this.zipperResource.resetUnzip();
+            this.logResults('Loading...');
+            this.updateButtonText('Load local zip', 'loading...');
+
+            let input: HTMLInputElement = document.createElement('input');
+            input.type = 'file';
+            input.onchange = async (_) => {
+                if (input.files === undefined) return;
+                    const time1 = Date.now();
+                    const arry = Array.from(input.files!);
+                    const binaryFile = arry[0];
+                    const buffer = await binaryFile.arrayBuffer();
+                    this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
+                    const time2 = Date.now();
+                    const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type?.toUpperCase() :'PNG/JPEG'
+                    this.zipperResource.setZipData(new Uint8Array(buffer));
+                    await this.loadResourcesFromZip();
+                    this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+                    this.logResults('Total time loading zipped files from local ', Date.now() - time1, 'ms');
+                
+            };
+            input.click();
+            this.isLoading = false;
+            this.updateButtonText('Load local zip', 'Load local zip');
+        });
+
+        this.createButton('Load server zip', this.soundContainer, 20 + scaleW + offset, offset + height * 3, scaleW, scaleH, 24, async () => {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            this.isSpritesTest = false;
+            this.disposeAll();
+            this.zipperResource.resetUnzip();
+            this.logResults('Loading...');
+            this.updateButtonText('Load server zip', 'loading...');
+
+            const time1 = Date.now();
+            const url = this.ktx2Type ? (this.ktx2Type === KTX2Types.ETC1S ? serverUrlKtx2Etc1s : serverUrlKtx2Uastc) : serverUrlNormal;
+            const timestamp = new Date().getTime();
+            const data = await fetch(url + `?${timestamp}`).then(
+                (res) => res.arrayBuffer()
+            );
+            this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
+            const time2 = Date.now();
+            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG/JPEG'
+            this.zipperResource.setZipData(new Uint8Array(data));
+            await this.loadResourcesFromZip();
+            this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
+            this.isLoading = false;
+            this.logResults('Total time loading zipped files from server ', Date.now() - time1, 'ms'); 
+            this.updateButtonText('Load server zip', 'Load server');
+        }); 
+        
+        this.resultText = this.createResultText('Logs:', 20, offset + height * 6).text;
+
+        // this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
+        //     this.printUsageInfo();
+        // });
+
+        this.createButton('Quality\nSprite', this.loadContainer, 20, offset + height * 4.5, scaleW * 0.45, scaleH, 18, async () => {
+            this.isSpritesTest = false;
+            this.disposeAll();
+
+            this.logResults('Loading quality sprite test...');
+            await this.ktxTestViewer.createQualityTextures();
+            this.logResults('Quality sprites loaded!');
+        });
+
+        this.createButton('Quality\nAnim', this.loadContainer, 20 + (scaleW  * 0.45) + offset, offset + height * 4.5, scaleW * 0.45, scaleH, 18, async () => {
+            this.isSpritesTest = false;
+            this.disposeAll();
+
+            this.logResults('Loading quality animation test...');
+            await this.ktxTestViewer.createQualityAnimations(0.2);
+            this.logResults('Quality animations loaded!');
+        });
+
+        this.createButton('Test\nSprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW * 0.45, scaleH, 18, async () => {
+            if (!this.isSpritesTest) this.disposeAll();
+
+            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
+            this.logResults(`Loading 1000 ${imageExt} sprites...`);
+            await this.ktxTestViewer.createTestSprites(1000, this.ktx2Type);
+            this.logResults(`${imageExt} sprites loaded!`);
+            this.isSpritesTest = true;
+        });
+
+        this.createButton('Test\nAnims', this.loadContainer, 20 + scaleW + (scaleW  * 0.45) + (offset * 2), offset + height * 4.5, scaleW * 0.45, scaleH, 18, async () => {
+            if (!this.isSpritesTest) this.disposeAll();
+
+            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
+            const loadText = this.isSpritesTest ? 'Adding' : 'Loading';
+            this.logResults(`${loadText} 1000 ${imageExt} animation...`);
+            await this.ktxTestViewer.createTestAnimation(1000, this.ktx2Type, 0.2);
+            this.logResults(`${imageExt} animation loaded!`);
+            this.isSpritesTest = true;
+        });
+    }
+
+    private logResults(message?: any, ...optionalParams: any[]): void {
+        const params = optionalParams.length === 0 ? '': optionalParams.join(' ');
+        console.log(message, params);
+        if(this.resultText) {
+            this.resultText.text += '\n  - ' + message + params;
+        }
+    }
+
+    private updateButtonText(name: string, text: string): void {
+        if (!this.buttonTextMap.has(name) || this.buttonTextMap.get(name) === undefined) {
+            return;
+        }
+
+        this.buttonTextMap.get(name)!.text = text;
+    }
+
+    private createButton(name: string, container: Pixi.Container, x: number, y: number, w: number, h: number, fontSize: number, callback: () => void): { button:  Pixi.Container, text: Pixi.Text } {
+        const g1 = new Pixi.Graphics();
+        g1.beginFill(0x000000, 0.9);
+        g1.drawRect(0, 0, w, h);
+        g1.endFill();
+
+        const text = new Pixi.Text(name, {
+            fontFamily: 'Arial',
+            fontSize: fontSize,
+            fill: 0xffffff,
+            align: 'center',
+        });
+        text.anchor.set(0.5, 0.5);
+        text.position.set(w * 0.5, h * 0.5);
+        this.buttonTextMap.set(name, text);
+
+        container = new Pixi.Container();
+        container.hitArea = new Pixi.Rectangle(0, 0, w, h);
+        container.eventMode = 'dynamic';
+        container.position.set(x, y);
+        // container.on('click', async () => {
+        //     callback();
+        // });
+        container.on('pointerup', async () => {
+            callback();
+        });
+        container.addChild(g1);
+        container.addChild(text);
+        this.container.addChild(container);
+
+        return { button: container, text };
+    }
+
+    private createResultText(name: string, x: number, y: number): { text: Pixi.Text } {
+        const text = new Pixi.Text(name, {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0xffffff,
+            strokeThickness: 4,
+            align: 'left',
+        });
+        text.position.set(x, y);
+
+        this.container.addChild(text);
+
+        return { text };
+    }
+
+    
     public async createResources(): Promise<void> {
         const texturePaths = getTextureAssetPaths(this.ktx2Type);
         const length = texturePaths.length;
@@ -115,230 +377,6 @@ export class Project implements IProject {
         }
     }
 
-    private createButtons(): void {
-        const offset = 20;
-        const width = 128;
-        const height = 48;
-        const scaleW = width * 1.5;
-        const scaleH = 56;
-        
-        this.createButton('Save', this.saveContainer, 20, offset, scaleW, scaleH, async () => {
-            if (this.isSaving) return;
-            this.isSaving = true;
-            this.zipperResource.resetZip();
-            const addon = this.ktx2Type ? "[Has KTX2 textures: " + this.ktx2Type?.toUpperCase() + "]" : "";
-            this.logResults('Saving... ' + addon);
-            this.updateButtonText('Save', 'saving...');
-            this.disposeAll();
-            const time1 = Date.now();
-            const texturePaths = getTextureAssetPaths(this.ktx2Type);
-            const length = texturePaths.length;
-            for (let i = 0; i < length; i++) {
-                await this.zipperResource.zipResource(texturePaths[i]);
-            }
-            for (let j = 0; j < assetsSoundPaths.length; j++) {
-                await this.zipperResource.zipResource(assetsSoundPaths[j]);
-            }
-            this.zipperResource.download();
-            this.isSaving = false;
-            this.logResults('Saved in ', Date.now() - time1, ' ms');
-            this.updateButtonText('Save', 'Save');
-        });
-
-        this.createButton('Sound', this.loadContainer, 20 + scaleW + offset, offset, scaleW, scaleH, async () => {
-            _.sample(this.howlSounds)?.play();
-        });
-
-        const ktx2Btn = this.createButton(this.ktxBtnTxt, this.loadContainer, 20, offset + height * 1.5 , scaleW, scaleH, async () => {
-            this.disposeAll();
-
-            if (!this.ktx2Type) {
-                this.ktx2Type = KTX2Types.ETC1S;
-            } else if (this.ktx2Type === KTX2Types.ETC1S) {
-                this.ktx2Type = KTX2Types.UASTC;
-            } else {
-                this.ktx2Type = undefined;
-            }
-
-            this.ktxBtnTxt = this.ktx2Type ? 'KTX2 ' + this.ktx2Type?.toUpperCase() : 'KTX2 Disabled';
-            ktx2Btn.text.text = this.ktxBtnTxt;
-            this.logResults(this.ktxBtnTxt);
-
-            if (this.ktx2Type) {
-                const url = this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2';
-                const texture: Pixi.Texture = await Pixi.Assets.load(url);
-                this.pixiTextures.push(texture);
-                const sprite = new Pixi.Sprite(texture) as NamedSprite;
-                sprite.name = 'KTX.ktx2';
-                sprite.position.set(
-                    _.random(texture.width * 0.5, this.canvasApp.screen.width - texture.width * 0.5),
-                    _.random(texture.height * 0.5, this.canvasApp.screen.height - texture.height * 0.5)
-                );
-                this.pixiSprites.push(sprite);
-                this.contentContainer.addChild(sprite);
-            }
-        });
-
-        this.createButton('Load normal', this.soundContainer, 20  + scaleW + offset, offset + height * 1.5 , scaleW, scaleH, async () => {
-            if (this.isLoading) return;
-            this.zipperResource.resetUnzip();
-            this.isLoading = true;
-            this.logResults('Loading...');
-            this.updateButtonText('Load normal', 'loading...');
-            this.disposeAll();
-            const time1 = Date.now();
-            await this.createResources();
-            this.isLoading = false;
-            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type?.toUpperCase() :'PNG/JPEG'
-            this.logResults(`Total time loading files from assets [${imageExt}] `, Date.now() - time1, 'ms');
-            this.updateButtonText('Load normal', 'Load normal');
-        });
-
-        this.createButton('Load local zip', this.soundContainer, 20, offset + height * 3 , scaleW, scaleH, async () => {
-            if (this.isLoading) return;
-            this.zipperResource.resetUnzip();
-            this.isLoading = true;
-            this.logResults('Loading...');
-            this.updateButtonText('Load local zip', 'loading...');
-            this.disposeAll();
-            let input: HTMLInputElement = document.createElement('input');
-            input.type = 'file';
-            input.onchange = async (_) => {
-                if (input.files === undefined) return;
-                    const time1 = Date.now();
-                    const arry = Array.from(input.files!);
-                    const binaryFile = arry[0];
-                    const buffer = await binaryFile.arrayBuffer();
-                    this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
-                    const time2 = Date.now();
-                    const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type?.toUpperCase() :'PNG/JPEG'
-                    this.zipperResource.setZipData(new Uint8Array(buffer));
-                    await this.loadResourcesFromZip();
-                    this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
-                    this.logResults('Total time loading zipped files from local ', Date.now() - time1, 'ms');
-                
-            };
-            input.click();
-            this.isLoading = false;
-            this.updateButtonText('Load local zip', 'Load local zip');
-        });
-
-        this.createButton('Load server zip', this.soundContainer, 20 + scaleW + offset, offset + height * 3, scaleW, scaleH, async () => {
-            if (this.isLoading) return;
-            this.zipperResource.resetUnzip();
-            this.isLoading = true;
-            this.logResults('Loading...');
-            this.updateButtonText('Load server zip', 'loading...');
-            this.disposeAll();
-            const time1 = Date.now();
-            const url = this.ktx2Type ? (this.ktx2Type === KTX2Types.ETC1S ? serverUrlKtx2Etc1s : serverUrlKtx2Uastc) : serverUrlNormal;
-            const timestamp = new Date().getTime();
-            const data = await fetch(url + `?${timestamp}`).then(
-                (res) => res.arrayBuffer()
-            );
-            this.logResults('Downloaded zip in ', Date.now() - time1, 'ms');
-            const time2 = Date.now();
-            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG/JPEG'
-            this.zipperResource.setZipData(new Uint8Array(data));
-            await this.loadResourcesFromZip();
-            this.logResults(`Loaded ${imageExt} textures in `, Date.now() - time2, 'ms');
-            this.isLoading = false;
-            this.logResults('Total time loading zipped files from server ', Date.now() - time1, 'ms'); 
-            this.updateButtonText('Load server zip', 'Load server');
-        }); 
-        
-        this.resultText = this.createResultText('Logs:', 20, offset + height * 6).text;
-
-        // this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
-        //     this.printUsageInfo();
-        // });
-
-        this.createButton('KTX Quality Test', this.loadContainer, 20, offset + height * 4.5, scaleW, scaleH, async () => {
-            this.disposeAll();
-            this.logResults('Loading KTX2 test...');
-            await this.ktxTestViewer.createTextures();
-            this.logResults('KTX2 test loaded!');
-        });
-
-        // this.createButton('Add test sprites', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
-        //     const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
-        //     this.logResults(`Loading 1000 ${imageExt} sprites...`);
-        //     await this.ktxTestViewer.createTestSprites(1000, this.ktx2Type);
-        //     this.logResults(`${imageExt} sprites loaded!`);
-        // });
-
-        this.createButton('Anim test', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH, async () => {
-            const imageExt = this.ktx2Type ? 'KTX2_' + this.ktx2Type.toUpperCase() :'PNG'
-            this.logResults(`Loading 1000 ${imageExt} animation...`);
-            await this.ktxTestViewer.createTestAnimation(1000, this.ktx2Type, 0.4);
-            this.logResults(`${imageExt} animation loaded!`);
-        });
-    }
-
-    private logResults(message?: any, ...optionalParams: any[]): void {
-        const params = optionalParams.length === 0 ? '': optionalParams.join(' ');
-        console.log(message, params);
-        if(this.resultText) {
-            this.resultText.text += '\n  - ' + message + params;
-        }
-    }
-
-    private updateButtonText(name: string, text: string): void {
-        if (!this.buttonTextMap.has(name) || this.buttonTextMap.get(name) === undefined) {
-            return;
-        }
-
-        this.buttonTextMap.get(name)!.text = text;
-    }
-
-    private createButton(name: string, container: Pixi.Container, x: number, y: number, w: number, h: number, callback: () => void): { button:  Pixi.Container, text: Pixi.Text } {
-        const g1 = new Pixi.Graphics();
-        g1.beginFill(0x000000, 0.9);
-        g1.drawRect(0, 0, w, h);
-        g1.endFill();
-
-        const text = new Pixi.Text(name, {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: 0xffffff,
-            align: 'center',
-        });
-        text.anchor.set(0.5, 0.5);
-        text.position.set(w * 0.5, h * 0.5);
-        this.buttonTextMap.set(name, text);
-
-        container = new Pixi.Container();
-        container.hitArea = new Pixi.Rectangle(0, 0, w, h);
-        container.interactive = true;
-        container.position.set(x, y);
-        // container.on('click', async () => {
-        //     callback();
-        // });
-        container.on('pointerup', async () => {
-            callback();
-        });
-        container.addChild(g1);
-        container.addChild(text);
-        this.container.addChild(container);
-
-        return { button: container, text };
-    }
-
-    private createResultText(name: string, x: number, y: number): { text: Pixi.Text } {
-        const text = new Pixi.Text(name, {
-            fontFamily: 'Arial',
-            fontSize: 20,
-            fill: 0xffffff,
-            strokeThickness: 4,
-            align: 'left',
-        });
-        text.position.set(x, y);
-
-        this.container.addChild(text);
-
-        return { text };
-    }
-
     private async loadResourcesFromZip(): Promise<void> {
         const texturePaths = getTextureAssetPaths(this.ktx2Type);
         const length = texturePaths.length;
@@ -373,7 +411,7 @@ export class Project implements IProject {
 
     private makeDraggableSprite(sprite: Pixi.Sprite): void {
         sprite.anchor.set(0.5);
-        sprite.interactive = true;
+        sprite.eventMode = 'dynamic';
         sprite.on('pointerdown', this.onDragStart, sprite)
             .on('pointerup', this.onDragEnd, sprite)
             .on('pointerupoutside', this.onDragEnd, sprite)

@@ -5,11 +5,12 @@ import Webpack from 'webpack';
 import { Config } from './webpack.utils';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 // import CompressionPlugin from 'compression-webpack-plugin';
 import Ip from 'ip';
 import os from 'os';
 
-const nodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const useLocalNetworkAddress = true;
 const networkInterfaces = os.networkInterfaces();
@@ -59,31 +60,45 @@ const config: Webpack.Configuration = {
     devServer: {
         host: myNetworkAddress,
         port: 8080,
-        inline: true,
-        open: true,
-        overlay: true,
-        compress: true,
-        openPage: 'index.html',
-        disableHostCheck: true,
-        writeToDisk: true,
-        contentBase: [Config.outPath, Path.join(__dirname, 'assets')],
+        client: {
+            overlay: true,
+        },
+        devMiddleware: {
+            writeToDisk: true,
+        },
+        open: 'index.html',
+        static: [{ directory: Config.outPathDev }, Path.join(__dirname, 'assets')],
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin({
+            terserOptions: {
+                compress: {
+                    drop_console: false, // Remove console.log statements
+                },
+                output: {
+                    comments: false, // Remove comments
+                },
+            },
+            extractComments: false, // Remove license file with extracted comments
+        }),],
     },
     plugins: [
         new HtmlWebpackPlugin({
             title: Config.outputName,
             template: './build/assets/index.html',
+            favicon: './build/assets/favicon.ico',
             inject: false,
             filename: 'index.html',
-            
         }),
         new CopyPlugin({
             patterns: [
-                { from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPath, 'assets') },
-                { from: Path.join(__dirname, '..', 'node_modules/pixi-basis-ktx2/assets/'), to: Path.join(Config.outPath, '') },
+                { from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPathDev, 'assets') },
+                { from: Path.join(__dirname, '..', 'node_modules/pixi-basis-ktx2/assets/'), to: Path.join(Config.outPathDev, '') },
             ],
             
         }),
-        new nodePolyfillPlugin(),
+        new NodePolyfillPlugin(),
         // new CompressionPlugin({
         //     algorithm: 'brotliCompress',
         //     filename: '[name].br[query]',
@@ -96,10 +111,12 @@ const config: Webpack.Configuration = {
     ],
     output: {
         filename: Config.outFileName,
-        path: Config.outPath + '/',
+        path: Config.outPathDev + '/',
         libraryTarget: 'umd',
         libraryExport: 'default',
         library: Config.outputName,
+        hotUpdateChunkFilename: 'hot/hot-update.js',
+        hotUpdateMainFilename: 'hot/hot-update.json',
     },
     resolve: {
         mainFields: ['module', 'main'],
