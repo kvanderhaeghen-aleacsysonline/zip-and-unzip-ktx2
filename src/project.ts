@@ -36,6 +36,8 @@ export class Project implements IProject {
     private ktxBtnTxt = 'KTX2 Disabled';
     private href = window.location.origin + window.location.pathname.replace('index.html','');
 
+    private readonly useWebGPU = true;
+
     public async launch(): Promise<void> {
         await this.loadKTX2Transcoder();
 
@@ -45,12 +47,19 @@ export class Project implements IProject {
             powerPreference:'high-performance', 
             width: window.innerWidth - 20,
             height:window.innerHeight - 20,
+            preference: this.useWebGPU ? 'webgpu' : 'webgl',
+            resolution: 1,
+            antialias: false,
+            hello: true,
         });
+        console.error('webgpu: ' , this.useWebGPU);
+
         this.canvasApp.canvas.id = 'fflate-ktx2'
         this.container = new Pixi.Container();
         this.contentContainer = new Pixi.Container();
         this.buttonTextMap = new Map<string, Pixi.Text>();
         this.container.addChild(this.contentContainer);
+        document.body.appendChild(this.canvasApp.canvas);
 
         this.pixiSprites = [];
         this.pixiTextures = [];
@@ -58,30 +67,31 @@ export class Project implements IProject {
         this.canvasApp.stage.addChild(this.container);
         this.zipperResource = new ZippedResource();
         this.createButtons();
-        document.body.appendChild(this.canvasApp.canvas);
 
         window.addEventListener("resize", (event) => {
             this.canvasApp.canvas.width =  window.innerWidth - 20;
             this.canvasApp.canvas.height = window.innerHeight - 20;
         });
-
         this.ktxTestViewer.init(this.canvasApp);
     }
 
 
     public async loadKTX2Transcoder(): Promise<void> {
-        // await KTX2Parser.loadTranscoder(this.href + '/basis_transcoder.js', this.href + '/basis_transcoder.wasm');
-        // Pixi.Assets.detections.push(detectKTX2);
-        // Pixi.Assets.loader.parsers.push(loadKTX2);
-        // Pixi.Assets.resolver.parsers.push(resolveKTX2TextureUrl);
+        Pixi.Assets.loader.parsers.push(Pixi.loadKTX);
+        Pixi.Assets.resolver.parsers.push(Pixi.resolveCompressedTextureUrl);
     }
 
-    private createButtons(): void {
+    private async createButtons(): Promise<void> {
         const offset = 20;
         const width = 128;
         const height = 48;
         const scaleW = width * 1.5;
         const scaleH = 56;
+
+        this.resultText = this.createResultText('Logs:', 20, offset + height * 6).text;
+        const webGPUResult = (await Pixi.isWebGPUSupported()) && navigator.gpu !== undefined ? 'Available' : 'Unavailable';
+        this.logResults(`WebGPU: ${webGPUResult} | Render type: ${ Pixi.RendererType[this.canvasApp.renderer.type]}`); 
+        console.error(Pixi.isWebGPUSupported());
         
         this.createButton('Save', this.saveContainer, 20, offset, scaleW, scaleH, 24, async () => {
             if (this.isSaving) return;
@@ -142,7 +152,6 @@ export class Project implements IProject {
                 const url = this.href  + getKTX2TypePath(this.ktx2Type).replace('./','/') + '/KTX.ktx2';
                 // const texture = await Pixi.Assets.load<Pixi.Texture>(url);
                 const texture = await Pixi.Assets.load<Pixi.Texture>(url);
-                console.error(texture);
                 this.pixiTextures.push(texture);
                 const sprite = new Pixi.Sprite(texture);
                 sprite.label = 'KTX.ktx2';
@@ -229,8 +238,6 @@ export class Project implements IProject {
             this.updateButtonText('Load server zip', 'Load server');
         }); 
         
-        this.resultText = this.createResultText('Logs:', 20, offset + height * 6).text;
-
         // this.createButton('Print Usage', this.loadContainer, 20 + scaleW + offset, offset + height * 4.5, scaleW, scaleH * 0.5, () => {
         //     this.printUsageInfo();
         // });

@@ -59,7 +59,7 @@ const config: Webpack.Configuration = {
     },
     devServer: {
         host: myNetworkAddress,
-        port: 8080,
+        port: 8043,
         client: {
             overlay: true,
         },
@@ -68,6 +68,9 @@ const config: Webpack.Configuration = {
         },
         open: 'index.html',
         static: [{ directory: Config.outPathDev }, Path.join(__dirname, 'assets')],
+        server: {
+            type: 'https',
+          },
     },
     optimization: {
         minimize: true,

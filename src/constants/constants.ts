@@ -199,14 +199,15 @@ export const assetTexturePaths = [
 export const assetsKTXTestPaths = [
     './assets/ktxTest/x2Portrait.png',
     './assets/ktxTest/x2Portrait-etc1s.ktx2',
-    './assets/ktxTest/x2Portrait-etc1s3.ktx2',
+    './assets/ktxTest/x2Portrait-etc1s2.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-mid.ktx2',
+    './assets/ktxTest/x2Portrait-uastc-mid2.ktx2',
     './assets/ktxTest/x2Portrait-uastc-high.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-mid3.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-high3.ktx2',
-    './assets/ktxTest/x2Portrait-uastc-high4.ktx2',
-    // './assets/ktxTest/x2Portrait-uastc-mid3-zlib.ktx2', // zlib not yet supported in current ktx2 library
-    // './assets/ktxTest/x2Portrait-uastc-high3-zlib.ktx2',
-    // './assets/ktxTest/x2Portrait-uastc-high4-zlib.ktx2'
+    './assets/ktxTest/x2Portrait-uastc-high2.ktx2',
+    // './assets/ktxTest/x2Portrait-uastc-mid-zlib.ktx2', // zlib not yet supported in current ktx2 library
+    // './assets/ktxTest/x2Portrait-uastc-mid-zlib2.ktx2',
+    // './assets/ktxTest/x2Portrait-uastc-high-zlib.ktx2',
+    // './assets/ktxTest/x2Portrait-uastc-high-zlib2.ktx2',
 ];
 
 export const animTestPath = {
