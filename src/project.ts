@@ -39,6 +39,9 @@ export class Project implements IProject {
     private readonly useWebGPU = true;
 
     public async launch(): Promise<void> {
+        const params = new URLSearchParams(window.location.search);
+        const prefParam = params.get('renderer') as 'webgl' | 'webgpu' ?? 'webgl';
+
         await this.loadKTX2Transcoder();
 
         this.canvasApp = new Pixi.Application();
@@ -47,12 +50,12 @@ export class Project implements IProject {
             powerPreference:'high-performance', 
             width: window.innerWidth - 20,
             height:window.innerHeight - 20,
-            preference: this.useWebGPU ? 'webgpu' : 'webgl',
+            preference: prefParam,
             resolution: 1,
             antialias: false,
             hello: true,
         });
-        console.error('webgpu: ' , this.useWebGPU);
+        console.log('Renderer preference: ' , prefParam);
 
         this.canvasApp.canvas.id = 'fflate-ktx2'
         this.container = new Pixi.Container();
