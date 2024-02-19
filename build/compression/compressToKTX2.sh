@@ -64,7 +64,7 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 
     # Full path name of every file without extension
     file_without_extension="${file%.*}"
-    # echo "File without extension: $file_without_extension"
+    file_extension="${file##*.}"
 
     # Root directory
     # echo "Root directory: $root_directory"
@@ -72,13 +72,10 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
     # Substring of the root directory minus the full path
     substring="${file#$root_directory}"
 	substring_without_extension="${substring%.*}"
-    # echo "Substring of the root directory: $substring_without_extension"
 	
 	# Extract the directory path from the substring
     directory_path="$ktx2_directory$(dirname "$substring_without_extension")"
 
-    # echo "Directory path: $directory_path"
-	
 	if [ ! -d "$directory_path" ]; then
 		mkdir -p "$directory_path"
 		echo "Create directory: $directory_path"
@@ -87,11 +84,18 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 	# Concatenate root directory, "KTX2", and substring
     new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
 	echo "Encoding to KTX2..."
+
+    # Check the file extension and set color format accordingly
+    if [ "$file_extension" == "jpeg" ] || [ "$file_extension" == "jpg" ]; then
+        color_format="--format R8G8B8_SRGB"
+    else
+        color_format="--format R8G8B8A8_SRGB"
+    fi
 	
-	# Run toktx.exe for the current file
-    # Info: https://github.khronos.org/KTX-Software/ktxtools/ktxsc.html
-    echo "$script_directory/ktx.exe" create $toktx_params "$file" "$new_path"
-    "$script_directory/ktx.exe" create $toktx_params "$file" "$new_path"
+	# Run ktx.exe for the current file
+    # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html
+    echo "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
+    "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
 	echo "Created file: $new_path"
 
     echo "------------------------"

@@ -3,5 +3,5 @@ export function wait(ms: number): Promise<void> {
         setTimeout(() => {
             res();
         }, ms);
-    })
+    });
 }

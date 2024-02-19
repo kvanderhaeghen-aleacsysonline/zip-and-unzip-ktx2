@@ -25,14 +25,14 @@ export class ZippedResource {
         this.zipInfo = {};
     }
 
-    public resetZip(): void  {
+    public resetZip(): void {
         this.zipInfo = {};
     }
 
     public resetUnzip(): void {
-        if(this.unzipped) {
+        if (this.unzipped) {
             const keys = Object.keys(this.unzipped);
-            keys.forEach((key)=> {
+            keys.forEach((key) => {
                 delete this.unzipped![key];
             });
             this.unzipped = undefined;
@@ -57,7 +57,7 @@ export class ZippedResource {
     }
 
     public async zipResource(path: string): Promise<void> {
-        const buffer = await fetch(path,  {
+        const buffer = await fetch(path, {
             method: 'get',
             mode: 'no-cors',
         }).then((res) => res.arrayBuffer());
@@ -115,7 +115,7 @@ export class ZippedResource {
         const byteArr = this.unzipResource(fileName);
         if (!byteArr) return undefined;
 
-        return Pixi.Texture.from({ resource: byteArr, width: 512, height: 512 })
+        return Pixi.Texture.from({ resource: byteArr, width: 512, height: 512 });
     }
 
     public getAudio(path: string): Howl {

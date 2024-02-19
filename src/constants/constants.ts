@@ -1,8 +1,8 @@
-import _ from "lodash";
-import { KTX2Types } from "../types/compressionTypes";
+import _ from 'lodash';
+import { KTX2Types } from '../types/compressionTypes';
 
-export const assetKtxEtc1sPath = './assets/KTX2_ETC1S'
-export const assetKtxUastcPath = './assets/KTX2_UASTC'
+export const assetKtxEtc1sPath = './assets/KTX2_ETC1S';
+export const assetKtxUastcPath = './assets/KTX2_UASTC';
 export const assetTexturePaths = [
     './assets/texture/dice/die1.png',
     './assets/texture/dice/die2.png',
@@ -210,11 +210,31 @@ export const assetsKTXTestPaths = [
     // './assets/ktxTest/x2Portrait-uastc-high-zlib2.ktx2',
 ];
 
-export const animTestPath = {
+export const assetsKTXTestPathsPOTS = [
+    './assets/ktxTestPOTS/x2Portrait.png',
+    './assets/ktxTestPOTS/x2Portrait-etc1s.ktx2',
+    './assets/ktxTestPOTS/x2Portrait-etc1s2.ktx2',
+    './assets/ktxTestPOTS/x2Portrait-uastc-mid.ktx2',
+    './assets/ktxTestPOTS/x2Portrait-uastc-mid2.ktx2',
+    './assets/ktxTestPOTS/x2Portrait-uastc-high.ktx2',
+    './assets/ktxTestPOTS/x2Portrait-uastc-high2.ktx2',
+    // './assets/ktxTestPOTS/x2Portrait-uastc-mid-zlib.ktx2', // zlib not yet supported in current ktx2 library
+    // './assets/ktxTestPOTS/x2Portrait-uastc-mid-zlib2.ktx2',
+    // './assets/ktxTestPOTS/x2Portrait-uastc-high-zlib.ktx2',
+    // './assets/ktxTestPOTS/x2Portrait-uastc-high-zlib2.ktx2',
+];
+
+export const animKTXDataPath = {
     path: './assets/animTest/anematicDragonFire',
     ext: 'jpg',
-    length: 16
-}
+    length: 16,
+};
+
+export const animKTXTestDataPOTS = {
+    path: './assets/animTestPOTS/anematicDragonFire',
+    ext: 'jpg',
+    length: 16,
+};
 
 export const assetsSoundPaths = [
     './assets/variant/ogg/soundHowl/soundAmbientBonus.ogg',
@@ -316,8 +336,10 @@ export const assetsSoundPaths = [
 ];
 
 export const serverUrlNormal = 'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/normal_images.alon';
-export const serverUrlKtx2Etc1s = 'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/ktx2_etc1s_images.alon';
-export const serverUrlKtx2Uastc = 'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/ktx2_uastc_images.alon';
+export const serverUrlKtx2Etc1s =
+    'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/ktx2_etc1s_images.alon';
+export const serverUrlKtx2Uastc =
+    'https://raw.githubusercontent.com/kvanderhaeghen-aleacsysonline/zip-and-unzip-ktx2/main/examples/ktx2_uastc_images.alon';
 
 export function getKTX2TypePath(ktx2Type: KTX2Types): string {
     return ktx2Type === KTX2Types.ETC1S ? assetKtxEtc1sPath : assetKtxUastcPath;
@@ -325,15 +347,26 @@ export function getKTX2TypePath(ktx2Type: KTX2Types): string {
 export function getTextureAssetPaths(ktx2Type?: KTX2Types): string[] {
     if (ktx2Type) {
         const texturePath = getKTX2TypePath(ktx2Type);
-        return assetTexturePaths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g,'ktx2'));
+        return assetTexturePaths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g, 'ktx2'));
     }
-    return assetTexturePaths
+    return assetTexturePaths;
 }
-export function getAnimationAssetPaths(ktx2Type?: KTX2Types): string[] {
-    const paths = _.times(animTestPath.length, (index) => `${animTestPath.path}${index + 1}.${animTestPath.ext}`);
+export function getAnimationAssetPaths(isPOTS: boolean, ktx2Type?: KTX2Types): string[] {
+    const data = getAnimTestData(isPOTS);
+    const paths = _.times(data.length, (index) => `${data.path}${index + 1}.${data.ext}`);
     if (ktx2Type) {
         const texturePath = getKTX2TypePath(ktx2Type);
-        return paths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g,'ktx2'));
+        return paths.map((item) => item.replace('./assets', texturePath).replace(/jpg|jpeg|png/g, 'ktx2'));
     }
     return paths;
+}
+export function getAssetsKTXTestPaths(isPOTS: boolean): string[] {
+    return isPOTS ? assetsKTXTestPathsPOTS : assetsKTXTestPaths;
+}
+export function getAnimTestData(isPOTS: boolean): {
+    path: string;
+    ext: string;
+    length: number;
+} {
+    return isPOTS ? animKTXTestDataPOTS : animKTXDataPath;
 }

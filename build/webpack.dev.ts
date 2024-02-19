@@ -66,7 +66,7 @@ const config: Webpack.Configuration = {
         devMiddleware: {
             writeToDisk: true,
         },
-        open: 'index.html?renderer=webgpu',
+        open: 'index.html',
         static: [{ directory: Config.outPathDev }, Path.join(__dirname, 'assets')],
         server: {
             type: 'https',

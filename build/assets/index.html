@@ -13,6 +13,7 @@
             <div id="gameDiv"></div>
         </div>
         <script>
+            if(!window.location.search.includes('renderer=')) window.location.search += '?renderer=webgl';
             TestProject.launch();
         </script>
     </body>
