@@ -5,7 +5,7 @@ on:
         branches:
             - master
             - main
-            - feature/pixi-v8
+            - pixi-v8
     workflow_dispatch:
         inputs:
             logLevel:
