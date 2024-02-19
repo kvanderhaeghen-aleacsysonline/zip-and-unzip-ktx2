@@ -1,0 +1,64 @@
+name: Build & Deploy
+
+on:
+    push:
+        branches:
+            - master
+            - main
+            - feature/pixi-v8
+    workflow_dispatch:
+        inputs:
+            logLevel:
+                description: 'Log level'
+                required: true
+                default: 'warning'
+                type: choice
+                options:
+                    - info
+                    - warning
+                    - debug
+
+jobs:
+    # Build job
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+            - run: corepack enable
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: yarn
+            - name: Install packages
+              run: yarn install --immutable
+            - name: Build javascript
+              run: yarn build:prod
+            - name: Setup Pages
+              id: pages
+              uses: actions/configure-pages@v4
+            - name: Build with Jekyll
+              uses: actions/jekyll-build-pages@v1
+              with:
+                  source: ./dist/prod
+                  destination: ./_site
+            - name: Upload artifact
+              uses: actions/upload-pages-artifact@v3
+
+    # Deployment job
+    deploy:
+        permissions:
+            contents: read
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{steps.deployment.outputs.page_url}}
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
