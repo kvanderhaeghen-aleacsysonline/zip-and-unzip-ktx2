@@ -84,13 +84,12 @@
         "js-to-ts-converter": "^0.18.2",
         "lodash": "^4.17.21",
         "pixi-basis-ktx2": "^0.0.20",
-        "pixi.js": "8.0.0-rc.9",
+        "pixi.js": "8.0.0-rc.10",
         "stats.js": "^0.17.0",
         "three": "^0.161.0",
         "zstddec": "^0.0.2"
     },
     "browser": {
         "fs": false
-    },
-    "packageManager": "yarn@4.0.2"
+    }
 }

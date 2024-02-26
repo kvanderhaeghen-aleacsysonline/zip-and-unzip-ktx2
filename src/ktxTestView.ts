@@ -3,6 +3,11 @@ import { getAnimationAssetPaths, getAssetsKTXTestPaths } from './constants/const
 import _ from 'lodash';
 import { KTX2Types } from './types/compressionTypes';
 
+// Interesting links:
+// https://github.com/pixijs/pixijs/discussions/9791
+// https://github.com/pixijs/pixijs/discussions/10222
+// https://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/#bc2-bc3-and-bc5
+
 export class KTXTestView {
     private canvasApp: Pixi.Application;
     private container: Pixi.Container = new Pixi.Container();
