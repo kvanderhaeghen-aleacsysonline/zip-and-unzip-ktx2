@@ -159,7 +159,8 @@ export class KTXTestView {
             (sprite as Pixi.AnimatedSprite).animationSpeed = animationSpeed;
             (sprite as Pixi.AnimatedSprite).play();
         } else {
-            const texture = await Pixi.Assets.load<Pixi.Texture>(path);
+            const assetLoad = path.includes('.ktx2') ? { src: path, loadParser: 'loadKTX2' } : { src: path };
+            const texture = await Pixi.Assets.load<Pixi.Texture>(assetLoad);
             sprite = new Pixi.Sprite(texture);
             this.testObjects.sprites.push(sprite as Pixi.Sprite);
         }
@@ -199,7 +200,8 @@ export class KTXTestView {
         for (let i = 0; i < spriteCount; i++) {
             const paths = getAssetsKTXTestPaths(isPOTS);
             const path = type === undefined ? paths[0] : type === KTX2Types.ETC1S ? paths[1] : paths[4];
-            const texture = await Pixi.Assets.load(path);
+            const assetLoad = path.includes('.ktx2') ? { src: path, loadParser: 'loadKTX2' } : { src: path };
+            const texture = await Pixi.Assets.load(assetLoad);
             const sprite = new Pixi.Sprite(texture);
             sprite.interactive = false;
             sprite.scale.set(0.1);
@@ -241,7 +243,8 @@ export class KTXTestView {
         for (let i = 0; i < paths.length; i++) {
             // To avoid Pixi.Texture being another instance, we need to create a new texture from a loaded base texture for our KTX2 texture.
             // This way the object was made with the same constructor instead of another one, because of it being seen as another instance.
-            const texture = await Pixi.Assets.load<Pixi.Texture>(paths[i]);
+            const assetLoad = paths[i].includes('.ktx2') ? { src: paths[i], loadParser: 'loadKTX2' } : { src: paths[i] };
+            const texture = await Pixi.Assets.load<Pixi.Texture>(assetLoad);
             textureArray.push(texture);
         }
         return Promise.resolve(textureArray);

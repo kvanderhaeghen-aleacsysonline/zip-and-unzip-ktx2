@@ -103,7 +103,7 @@ export class Project implements IProject {
     }
 
     private async loadKTX2Transcoder(): Promise<void> {
-        Pixi.Assets.loader.parsers.push(Pixi.loadKTX);
+        Pixi.Assets.loader.parsers.push(Pixi.loadKTX2 as any);
         Pixi.Assets.resolver.parsers.push(Pixi.resolveCompressedTextureUrl);
     }
 
@@ -198,8 +198,7 @@ export class Project implements IProject {
 
                 if (this.ktx2Type) {
                     const url = this.href + getKTX2TypePath(this.ktx2Type).replace('./', '/') + '/KTX.ktx2';
-                    // const texture = await Pixi.Assets.load<Pixi.Texture>(url);
-                    const texture = await Pixi.Assets.load<Pixi.Texture>(url);
+                    const texture = await Pixi.Assets.load<Pixi.Texture>({ src: url, loadParser: 'loadKTX2' });
                     this.pixiTextures.push(texture);
                     const sprite = new Pixi.Sprite(texture);
                     sprite.label = 'KTX.ktx2';
@@ -475,7 +474,8 @@ export class Project implements IProject {
         for (let i = 0; i < length; i++) {
             const texturePath = this.href + texturePaths[i].replace('./', '') + `?${timestamp}`;
             try {
-                const pixiTexture = await Pixi.Assets.load(texturePath);
+                const assetLoad = texturePath.includes('.ktx2') ? { src: texturePath } : { src: texturePath, loadParser: 'loadKTX2' };
+                const pixiTexture = await Pixi.Assets.load(assetLoad);
                 this.pixiTextures.push(pixiTexture);
                 const pixiSprite = new Pixi.Sprite(pixiTexture);
                 pixiSprite.label = texturePaths[i];
