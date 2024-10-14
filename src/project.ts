@@ -587,7 +587,6 @@ export class Project implements IProject {
 
   public async createResources(): Promise<void> {
     const texturePaths = getTextureAssetPaths(this.ktx2Type);
-    console.error(texturePaths);
     const length = texturePaths.length;
     const timestamp = new Date().getTime();
     for (let i = 0; i < length; i++) {
@@ -737,7 +736,6 @@ export class Project implements IProject {
   }
 
   public disposeTextures(): void {
-    console.error(this.pixiTextures.length, this.pixiSprites.length);
     for (let i = 0; i < this.pixiTextures.length; i++) {
       this.pixiTextures[i].destroy(true);
       this.pixiSprites[i].removeFromParent();
