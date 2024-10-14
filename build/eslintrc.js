@@ -1,7 +1,9 @@
 module.exports = {
+    root: true,
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        ecmaVersion: 2018,
+        parser: '@typescript-eslint/parser', 
+        ecmaVersion: 2020,
         sourceType: 'module',
         tsconfigRootDir: 'build/',
         project: ['tsconfig.all.json'],
@@ -13,18 +15,20 @@ module.exports = {
         es6: true,
         es2017: true,
     },
+    plugins: [
+        '@typescript-eslint',
+        'prettier',
+    ],
     extends: [
         'eslint:recommended', // Default recommended rules
-        'plugin:@typescript-eslint/eslint-plugin/eslint-recommended', // Adjust default rules for typescript support
-        'plugin:@typescript-eslint/eslint-plugin/recommended', // Default typescript rules
-        'plugin:@typescript-eslint/eslint-plugin/recommended-requiring-type-checking', // Enable typescript typechecking
-        'plugin:eslint-plugin-prettier/recommended', // Enable prettier support
-        'eslint-config-prettier/@typescript-eslint', // Enable prettier typescript rules
+        'plugin:@typescript-eslint/recommended', // Default typescript rules
+        'plugin:@typescript-eslint/recommended-requiring-type-checking', // Enable typescript typechecking
+        'plugin:prettier/recommended', // Enable prettier eslint rules
     ],
     rules: {
         'no-async-promise-executor': 'off',
         'no-prototype-builtins': 'off',
-        'prettier/prettier': ['error', JSON.parse(require('fs').readFileSync('build/prettierrc.json'))],
+        'prettier/prettier': ['error'],
         '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',

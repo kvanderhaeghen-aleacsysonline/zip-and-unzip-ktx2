@@ -1,9 +1,9 @@
 {
-    "prettier.configPath": "prettierrc.json",
+    "prettier.configPath": "build/prettierrc.json",
     "eslint.options": {
-        "overrideConfigFile": "build/eslintrc.js",
-        "ignorePatterns": ["*.js", "*.yml"]
+        "overrideConfigFile": "build/eslintrc.js"
     },
+    "eslint.validate": [ "javascript", "javascriptreact", "html", "typescriptreact", "typescript" ],
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
@@ -32,15 +32,16 @@
             "source.fixAll": "explicit"
         }
     },
-    "[yaml]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": false,
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "never"
-        }
-    },
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "files.eol": "\n",
     "editor.tabSize": 4,
-    "cSpell.words": ["Cubemap", "Khronos", "Mipmaps", "pvrtc"]
+    "cSpell.words": ["Cubemap", "Khronos", "Mipmaps", "pvrtc"],
+    "[javascript][json][jsonc][typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        }
+    },
+    "[shellscript]": {
+        "files.eol": "\n"
+    }
 }
