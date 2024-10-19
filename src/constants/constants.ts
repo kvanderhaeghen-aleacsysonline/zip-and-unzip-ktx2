@@ -236,6 +236,20 @@ export const animKTXTestDataPOTS = {
   length: 16,
 };
 
+export interface SpineTextureData {
+  path: string;
+  anim: string;
+  atlas: string;
+  texture: string;
+}
+
+export const spineKTXDataPath: SpineTextureData = {
+  path: "./assets/spineTest/theseus",
+  anim: "Theseus.anim.json",
+  atlas: "Theseus.tex1.atlas.txt",
+  texture: "Theseus.tex1.png",
+};
+
 export const assetsSoundPaths = [
   "./assets/variant/ogg/soundHowl/soundAmbientBonus.ogg",
   "./assets/variant/ogg/soundHowl/soundAmbientMain.ogg",
@@ -380,4 +394,15 @@ export function getAnimTestData(isPOTS: boolean): {
   length: number;
 } {
   return isPOTS ? animKTXTestDataPOTS : animKTXDataPath;
+}
+
+export function getSpineAssetPath(ktx2Type?: KTX2Types): SpineTextureData {
+  const spineTextureData = _.cloneDeep(spineKTXDataPath);
+  if (ktx2Type) {
+    const texturePath = getKTX2TypePath(ktx2Type);
+    spineTextureData.path.replace("./assets", texturePath);
+    spineTextureData.texture.replace(/jpg|jpeg|png/g, "ktx2");
+  }
+
+  return spineTextureData;
 }

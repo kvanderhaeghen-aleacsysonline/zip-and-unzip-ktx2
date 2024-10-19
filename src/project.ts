@@ -63,12 +63,12 @@ export class Project implements IProject {
       clearBeforeRender: true,
     });
 
-    this.canvasApp.canvas.id = "fflate-ktx2";
-    if (this.isMobileDevice) {
-      this.canvasApp.canvas.style.position = "absolute";
-      this.canvasApp.canvas.style.top = "40px";
-      this.canvasApp.canvas.style.left = "40px";
-    }
+    window.addEventListener("resize", () => {
+      this.canvasApp.renderer.resize(
+        window.innerWidth - 20,
+        window.innerHeight - 20,
+      );
+    });
 
     this.container = new Pixi.Container();
     this.contentContainer = new Pixi.Container();
@@ -91,21 +91,6 @@ export class Project implements IProject {
       navigator.userAgent,
     );
   }
-  private calculateScaleRatio(): number {
-    const standardWidth = 1920;
-    const standardHeight = 1080;
-
-    // Get current screen size
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    // Calculate scaling ratios
-    const scaleX = screenWidth / standardWidth;
-    const scaleY = screenHeight / standardHeight;
-    return window.screen.orientation.type.includes("landscape")
-      ? scaleX
-      : scaleY;
-  }
 
   private loadKTX2Transcoder(): void {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
@@ -124,7 +109,7 @@ export class Project implements IProject {
   }
 
   private createButtons(): void {
-    const screenScale = 1; // this.calculateScaleRatio();
+    const screenScale = 1;
     const offset = 20 * screenScale;
     const width = 128 * screenScale;
     const height = 48 * screenScale;
@@ -392,6 +377,21 @@ export class Project implements IProject {
       },
     );
 
+    const potsBtn = this.createButton(
+      "POTS\nOff",
+      this.loadContainer,
+      20 + scaleW + scaleW * 0.45 * 2 + offset * 3,
+      offset + height * 3,
+      scaleW * 0.45,
+      scaleH,
+      18 * screenScale,
+      () => {
+        this.isPOTS = !this.isPOTS;
+        potsBtn.text.text = this.isPOTS ? "POTS\nOn" : "POTS\nOff";
+        this.logResults(potsBtn.text.text.replace("\n", " "));
+      },
+    );
+
     this.createButton(
       "Quality\nSprite",
       this.loadContainer,
@@ -480,18 +480,25 @@ export class Project implements IProject {
       },
     );
 
-    const potsBtn = this.createButton(
-      "POTS\nOff",
+    this.createButton(
+      "Test\nSpines",
       this.loadContainer,
       20 + scaleW + scaleW * 0.45 * 2 + offset * 3,
       offset + height * 4.5,
       scaleW * 0.45,
       scaleH,
       18 * screenScale,
-      () => {
-        this.isPOTS = !this.isPOTS;
-        potsBtn.text.text = this.isPOTS ? "POTS\nOn" : "POTS\nOff";
-        this.logResults(potsBtn.text.text.replace("\n", " "));
+      async () => {
+        if (!this.isSpritesTest) this.disposeAll();
+
+        const imageExt = this.ktx2Type
+          ? "KTX2_" + this.ktx2Type.toUpperCase()
+          : "PNG";
+        const loadText = this.isSpritesTest ? "Adding" : "Loading";
+        this.logResults(`${loadText} 1000 ${imageExt} spine...`);
+        await this.ktxTestViewer.createTestSpine(1000, this.ktx2Type);
+        this.logResults(`${imageExt} animation loaded!`);
+        this.isSpritesTest = true;
       },
     );
   }

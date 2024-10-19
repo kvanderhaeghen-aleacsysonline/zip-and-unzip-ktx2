@@ -2,9 +2,11 @@ import * as Pixi from "pixi.js";
 import {
   getAnimationAssetPaths,
   getAssetsKTXTestPaths,
+  getSpineAssetPath,
 } from "./constants/constants";
 import _ from "lodash";
 import { KTX2Types } from "./types/compressionTypes";
+import * as PixiSpine from "@pixi/spine-pixi";
 
 // Interesting links:
 // https://github.com/pixijs/pixijs/discussions/9791
@@ -19,10 +21,12 @@ export class KTXTestView {
   private testObjects: {
     sprites: Pixi.Sprite[];
     animations: Pixi.AnimatedSprite[];
+    spines: PixiSpine.Spine[];
     texts: Pixi.Text[];
   } = {
     sprites: [],
     animations: [],
+    spines: [],
     texts: [],
   };
 
@@ -245,35 +249,6 @@ export class KTXTestView {
     }
   }
 
-  // private loadSpineObject(): Promise<any>  {
-  //     return new Promise<any>(async (resolve, reject) => {
-  //         if (spineObject.isBase64) {
-  //             try {
-  //                 const texture = Pixi.BaseTexture.from(spineObject.texturePath!);
-
-  //                 // Decode base64 string to string
-  //                 const atlasEncoded = spineObject.atlasPath?.split(",")[1] ?? '';
-  //                 const atlasString = atob(atlasEncoded ?? '');
-  //                 const spineAtlas = new pixiSpine.TextureAtlas(atlasString, (atlasName, textureLoader) => {
-  //                     const atlasId = atlasName.split('.')[1];
-  //                     textureLoader(texture);
-  //                 });
-  //                 const skeletonParser = new SkeletonJson(new AtlasAttachmentLoader(spineAtlas));
-
-  //                 // Decode base64 string to string
-  //                 const animationEncoded = spineObject.jsonPath?.split(",")[1] ?? '';
-  //                 const animationString = atob(animationEncoded ?? '');
-  //                 // Parse string as JSON data
-  //                 const jsonData = JSON.parse(animationString);
-  //                 resolve({ spineData: skeletonParser.readSkeletonData(jsonData) as pixiSpine.ISkeletonData });
-  //             } catch (error) {
-  //                 console.error('Error loading assets:', error);
-  //                 reject(error);
-  //             }
-  //         }
-  //     })
-  // }
-
   public async createTestAnimation(
     spriteCount: number,
     isPOTS: boolean,
@@ -307,6 +282,128 @@ export class KTXTestView {
     }
   }
 
+  public async createTestSpine(
+    spriteCount: number,
+    type?: KTX2Types,
+  ): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      const spritePaths = getSpineAssetPath(type);
+      const atlas = await this.getUrlContentAsBase64(
+        spritePaths.path + "/" + spritePaths.atlas,
+      );
+      const animation = await this.getUrlContentAsBase64(
+        spritePaths.path + "/" + spritePaths.anim,
+      );
+
+      Pixi.Assets.add(
+        type !== undefined
+          ? {
+              alias: "spineImage",
+              src: spritePaths.path + "/" + spritePaths.texture,
+              loadParser: "loadKTX2",
+            }
+          : {
+              alias: "spineImage",
+              src: spritePaths.path + "/" + spritePaths.texture,
+            },
+      );
+      console.warn(atlas);
+      // TODO: Search issue with atlas & base64
+      const atlasAtob = btoa(atob(atlas).replace("[IMG]", "spineImage"));
+      Pixi.Assets.add({
+        alias: "atlasTxt",
+        src: `${atlasAtob}`,
+        loadParser: "loadTxt",
+      });
+
+      Pixi.Assets.add({
+        alias: "skeleton",
+        src: `${animation}`,
+        loadParser: "loadJson",
+      });
+
+      try {
+        const { atlasTxt }: Record<string, unknown> = await Pixi.Assets.load([
+          "atlasTxt",
+          "skeleton",
+          "spineImage",
+        ]);
+
+        const textureAtlas: PixiSpine.TextureAtlas = new PixiSpine.TextureAtlas(
+          atlasTxt as string,
+        );
+        Pixi.Assets.cache.set("atlas", textureAtlas);
+
+        if (textureAtlas) {
+          for (const page of textureAtlas?.pages ?? []) {
+            const sprite: Pixi.Sprite = Pixi.Assets.get(page.name);
+            page.setTexture(PixiSpine.SpineTexture.from(sprite.texture.source));
+          }
+          for (let i = 0; i < spriteCount; i++) {
+            const baseSpine = PixiSpine.Spine.from({
+              skeleton: "skeleton",
+              atlas: "atlas",
+              scale: 0.1,
+            });
+            baseSpine.position.set(
+              _.random(
+                baseSpine.width * 0.05,
+                this.canvasApp.screen.width - baseSpine.width * 0.05,
+              ),
+              _.random(
+                baseSpine.height * 0.05,
+                this.canvasApp.screen.height - baseSpine.height * 0.05,
+              ),
+            );
+
+            this.container.addChild(baseSpine);
+            this.testObjects.spines.push(baseSpine);
+            baseSpine.state.setAnimation(0, "idle", true);
+            baseSpine.autoUpdate = true;
+          }
+        }
+      } catch (error: unknown) {
+        console.error("Error creating TextureAtlas:", error);
+        // Handle the error properly, e.g., by throwing a custom error or returning an error value
+      }
+      resolve();
+    });
+  }
+
+  private async getUrlContentAsBase64(url: string): Promise<string> {
+    try {
+      // Fetch the url
+      console.warn(`Fetching ${url}...`);
+      const response: Response = await fetch(url);
+
+      // Check if the fetch was successful
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the content as an ArrayBuffer
+      const arrayBuffer: ArrayBuffer = await response.arrayBuffer();
+
+      // Convert ArrayBuffer to Base64
+      const base64String: string = btoa(
+        new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          "",
+        ),
+      );
+
+      // Get the content type
+      const contentType: string =
+        response.headers.get("content-type") || "application/octet-stream";
+
+      // Return the complete Data URL
+      return `data:${contentType};base64,${base64String}`;
+    } catch (error) {
+      console.error("Error fetching content:", error);
+      throw error;
+    }
+  }
+
   public async getAnimationTextures(paths: string[]): Promise<Pixi.Texture[]> {
     const textureArray: Pixi.Texture[] = [];
     for (let i = 0; i < paths.length; i++) {
@@ -337,6 +434,10 @@ export class KTXTestView {
     for (let i = 0; i < this.testObjects.animations.length; i++) {
       this.testObjects.animations[i].removeFromParent();
       this.testObjects.animations[i].destroy();
+    }
+    for (let i = 0; i < this.testObjects.animations.length; i++) {
+      this.testObjects.spines[i].removeFromParent();
+      this.testObjects.spines[i].destroy();
     }
     for (let i = 0; i < this.testObjects.texts.length; i++) {
       this.testObjects.texts[i].removeFromParent();
