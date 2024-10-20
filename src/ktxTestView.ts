@@ -4,9 +4,9 @@ import {
   getAssetsKTXTestPaths,
   getSpineAssetPath,
 } from "./constants/constants";
-import _ from "lodash";
 import { KTX2Types } from "./types/compressionTypes";
 import * as PixiSpine from "@pixi/spine-pixi";
+import _ from "lodash";
 
 // Interesting links:
 // https://github.com/pixijs/pixijs/discussions/9791
@@ -288,63 +288,43 @@ export class KTXTestView {
   ): Promise<void> {
     return new Promise<void>(async (resolve) => {
       const spritePaths = getSpineAssetPath(type);
-      const atlas = await this.getUrlContentAsBase64(
-        spritePaths.path + "/" + spritePaths.atlas,
-      );
-      const animation = await this.getUrlContentAsBase64(
-        spritePaths.path + "/" + spritePaths.anim,
-      );
-
-      Pixi.Assets.add(
-        type !== undefined
-          ? {
-              alias: "spineImage",
-              src: spritePaths.path + "/" + spritePaths.texture,
-              loadParser: "loadKTX2",
-            }
-          : {
-              alias: "spineImage",
-              src: spritePaths.path + "/" + spritePaths.texture,
-            },
-      );
-      console.warn(atlas);
-      // TODO: Search issue with atlas & base64
-      const atlasAtob = btoa(atob(atlas).replace("[IMG]", "spineImage"));
-      Pixi.Assets.add({
-        alias: "atlasTxt",
-        src: `${atlasAtob}`,
-        loadParser: "loadTxt",
-      });
-
-      Pixi.Assets.add({
-        alias: "skeleton",
-        src: `${animation}`,
-        loadParser: "loadJson",
-      });
+      const atlas =
+        (await (
+          await fetch(spritePaths.path + "/" + spritePaths.atlas)
+        ).text()) ?? "";
+      const animation =
+        (await (
+          await fetch(spritePaths.path + "/" + spritePaths.anim)
+        ).text()) ?? "";
 
       try {
-        const { atlasTxt }: Record<string, unknown> = await Pixi.Assets.load([
-          "atlasTxt",
-          "skeleton",
-          "spineImage",
-        ]);
-
         const textureAtlas: PixiSpine.TextureAtlas = new PixiSpine.TextureAtlas(
-          atlasTxt as string,
+          atlas,
         );
-        Pixi.Assets.cache.set("atlas", textureAtlas);
+        const skeletonParser = new PixiSpine.SkeletonJson(
+          new PixiSpine.AtlasAttachmentLoader(textureAtlas),
+        );
+        const spineData = skeletonParser.readSkeletonData(animation);
 
         if (textureAtlas) {
+          const texture = await Pixi.Assets.load<Pixi.Texture>(
+            type !== undefined
+              ? {
+                  src: spritePaths.path + "/" + spritePaths.texture,
+                  loadParser: "loadKTX2",
+                }
+              : {
+                  src: spritePaths.path + "/" + spritePaths.texture,
+                },
+          );
           for (const page of textureAtlas?.pages ?? []) {
-            const sprite: Pixi.Sprite = Pixi.Assets.get(page.name);
-            page.setTexture(PixiSpine.SpineTexture.from(sprite.texture.source));
+            page.setTexture(PixiSpine.SpineTexture.from(texture.source));
           }
+        }
+
+        if (spineData) {
           for (let i = 0; i < spriteCount; i++) {
-            const baseSpine = PixiSpine.Spine.from({
-              skeleton: "skeleton",
-              atlas: "atlas",
-              scale: 0.1,
-            });
+            const baseSpine = new PixiSpine.Spine(spineData);
             baseSpine.position.set(
               _.random(
                 baseSpine.width * 0.05,
@@ -358,7 +338,8 @@ export class KTXTestView {
 
             this.container.addChild(baseSpine);
             this.testObjects.spines.push(baseSpine);
-            baseSpine.state.setAnimation(0, "idle", true);
+            const firstAnim = spineData.animations[0];
+            baseSpine.state.setAnimation(0, firstAnim.name, true);
             baseSpine.autoUpdate = true;
           }
         }
