@@ -83,20 +83,27 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 	
 	# Concatenate root directory, "KTX2", and substring
     new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
-	echo "Encoding to KTX2..."
-
-    # Check the file extension and set color format accordingly
-    if [ "$file_extension" == "jpeg" ] || [ "$file_extension" == "jpg" ]; then
-        color_format="--format R8G8B8_SRGB"
-    else
-        color_format="--format R8G8B8A8_SRGB"
-    fi
 	
-	# Run ktx.exe for the current file
-    # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html
-    echo "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
-    "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
-	echo "Created file: $new_path"
+	# Check if the file extension does not match the extensions array
+	if [[ ! " ${extensions[@]} " =~ " ${file_extension,,} " ]]; then
+		# Copy the file to the new path if the extension doesn't match
+		cp "$file" "$new_path"
+		echo "Copied file: $new_path"
+	else
+		 # Check the file extension and set color format accordingly
+		echo "Encoding to KTX2..."
+		if [ "$file_extension" == "jpeg" ] || [ "$file_extension" == "jpg" ]; then
+			color_format="--format R8G8B8_SRGB"
+		else
+			color_format="--format R8G8B8A8_SRGB"
+		fi
+
+        # Run ktx.exe for the current file
+        # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html
+		echo "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
+		"$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
+		echo "Created file: $new_path"
+	fi
 
     echo "------------------------"
 done
@@ -107,7 +114,7 @@ end_time_seconds=$SECONDS
 elapsed_time=$((end_time - start_time))
 elapsed_time_seconds=$((end_time_seconds - start_time_seconds))
 echo "Elapsed time: $elapsed_time milliseconds / $elapsed_time_seconds seconds"
-echo "Files compressed to KTX2: $iteration_count"
+echo "Files processed: $iteration_count"
 
 # Calculate and log the average time per iteration
 average_time=$((elapsed_time / iteration_count))
