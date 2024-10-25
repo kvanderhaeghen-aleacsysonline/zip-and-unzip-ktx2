@@ -48,6 +48,9 @@ extensions=("png" "jpeg" "jpg")
 # Directories to include
 include_subdirectories=("animationSpine" "animTest" "animTestPOTS" "spineTest" "texture" "textureAtlas")
 
+# Directories to exclude
+excluded_subdirectories=("KTX2_ETC1S" "KTX2_UASTC")
+
 # Create "KTX2" directory if it doesn't exist
 ktx2_directory="$root_directory/$output_directory"
 if [ ! -d "$ktx2_directory" ]; then
@@ -56,8 +59,39 @@ if [ ! -d "$ktx2_directory" ]; then
 fi
 
 # Iterate through files in the specified directory and its subdirectories
-# find "$root_directory" -type f | while read -r file; do
-find $(printf "%s " "${root_directory}/${include_subdirectories[@]}") -type f | while read -r file; do
+find "$root_directory" -type f | while read -r file; do
+# find $(printf "%s " "${root_directory}/${include_subdirectories[@]/#/$root_directory/}") -type f | while read -r file; do
+
+    # Check if the file contains any of the included subdirectories or is in the root directory
+    if [[ "$file" == "$root_directory/"* ]]; then
+        contains_include_subdirectory=true
+    else
+        contains_include_subdirectory=false
+        for dir in "${include_subdirectories[@]}"; do
+            if [[ "$file" == *"$dir"* ]]; then
+                contains_include_subdirectory=true
+                break
+            fi
+        done
+    fi
+    # Skip the file if it doesn't contain any of the included subdirectories
+    if [ $contains_include_subdirectory == false ]; then
+        continue
+    fi
+
+    # Check if the file contains any of the excluded subdirectories
+    contains_excluded_subdirectory=false
+    for dir in "${excluded_subdirectories[@]}"; do
+        if [[ "$file" == *"$dir"* ]]; then
+            contains_excluded_subdirectory=true
+            break
+        fi
+    done
+    # Skip the file if it contains any of the excluded subdirectories
+    if [ $contains_excluded_subdirectory == true ]; then
+        continue
+    fi
+
 	# Increment the iteration counter
 	iteration_count="$((iteration_count+1))"
 	echo "File count: $iteration_count"
