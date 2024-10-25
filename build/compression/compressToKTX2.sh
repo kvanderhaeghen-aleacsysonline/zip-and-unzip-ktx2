@@ -45,6 +45,9 @@ root_directory="$(realpath "$script_directory/../../assets")"
 # Extensions to filter
 extensions=("png" "jpeg" "jpg")
 
+# Directories to include
+include_subdirectories=("animationSpine" "animTest" "animTestPOTS" "spineTest" "texture" "textureAtlas")
+
 # Create "KTX2" directory if it doesn't exist
 ktx2_directory="$root_directory/$output_directory"
 if [ ! -d "$ktx2_directory" ]; then
@@ -54,7 +57,7 @@ fi
 
 # Iterate through files in the specified directory and its subdirectories
 # find "$root_directory" -type f | while read -r file; do
-find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${extensions[1]}" -o -iname "*.${extensions[2]}" \) | while read -r file; do
+find $(printf "%s " "${root_directory}/${include_subdirectories[@]}") -type f | while read -r file; do
 	# Increment the iteration counter
 	iteration_count="$((iteration_count+1))"
 	echo "File count: $iteration_count"
@@ -72,6 +75,7 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
     # Substring of the root directory minus the full path
     substring="${file#$root_directory}"
 	substring_without_extension="${substring%.*}"
+    dot_file_extension=".${file_extension}"
 	
 	# Extract the directory path from the substring
     directory_path="$ktx2_directory$(dirname "$substring_without_extension")"
@@ -81,14 +85,22 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 		echo "Create directory: $directory_path"
 	fi
 	
-	# Concatenate root directory, "KTX2", and substring
-    new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
+	
 	
 	# Check if the file extension does not match the extensions array
 	if [[ ! " ${extensions[@]} " =~ " ${file_extension,,} " ]]; then
-		# Copy the file to the new path if the extension doesn't match
+        # Concatenate root directory, "KTX2", and substring
+        new_path="$ktx2_directory$substring_without_extension$suffix$dot_file_extension"
+
+        # Copy the file to the new path if the extension doesn't match
 		cp "$file" "$new_path"
 		echo "Copied file: $new_path"
+
+        # Replace .png with .ktx2 on the first line of the file if the extension doesn't match    
+		if [ "$file_extension" == "txt" ] || [ "$file_extension" == "atlas" ]; then
+			sed -i '1s/.png/.ktx2/' "$new_path"
+			echo "Updated file: $new_path"
+		fi
 	else
 		 # Check the file extension and set color format accordingly
 		echo "Encoding to KTX2..."
@@ -97,6 +109,9 @@ find "$root_directory" -type f \( -iname "*.${extensions[0]}" -o -iname "*.${ext
 		else
 			color_format="--format R8G8B8A8_SRGB"
 		fi
+
+        # Concatenate root directory, "KTX2", and substring
+        new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
 
         # Run ktx.exe for the current file
         # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html

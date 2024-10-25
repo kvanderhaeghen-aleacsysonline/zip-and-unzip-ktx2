@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Path from 'path';
@@ -6,36 +9,10 @@ import { Config } from './webpack.utils';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyPlugin from 'copy-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
+import { getIpAddress } from './networkHelper';
 // import CompressionPlugin from 'compression-webpack-plugin';
-import Ip from 'ip';
-import os from 'os';
 
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-
-const useLocalNetworkAddress = true;
-const networkInterfaces = os.networkInterfaces();
-const nonLocalInterfaces: Record<string, os.NetworkInterfaceInfo[]> = {};
-let myNetworkAddress: string = Ip.address();
-if (useLocalNetworkAddress) {
-    for (const inet in networkInterfaces) {
-        const addresses = networkInterfaces[inet]!;
-        for (let i = 0; i < addresses.length; i++) {
-            const address = addresses[i];
-            if (!address.internal) {
-                if (!nonLocalInterfaces[inet]) {
-                    nonLocalInterfaces[inet] = [];
-                }
-                nonLocalInterfaces[inet].push(address);
-                if (address.address.includes('192.168')) {
-                    if (address.address !== '192.168.0.1') {
-                        myNetworkAddress = address.address;
-                    }
-                }
-            }
-        }
-    }
-    // console.log(nonLocalInterfaces);
-}
 
 const config: Webpack.Configuration = {
     devtool: 'source-map',
@@ -58,7 +35,7 @@ const config: Webpack.Configuration = {
         ],
     },
     devServer: {
-        host: myNetworkAddress,
+        host: getIpAddress(),
         port: 8043,
         client: {
             overlay: true,
@@ -70,21 +47,23 @@ const config: Webpack.Configuration = {
         static: [{ directory: Config.outPathDev }, Path.join(__dirname, 'assets')],
         server: {
             type: 'https',
-          },
+        },
     },
     optimization: {
         minimize: true,
-        minimizer: [new TerserPlugin({
-            terserOptions: {
-                compress: {
-                    drop_console: false, // Remove console.log statements
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        drop_console: false, // Remove console.log statements
+                    },
+                    output: {
+                        comments: false, // Remove comments
+                    },
                 },
-                output: {
-                    comments: false, // Remove comments
-                },
-            },
-            extractComments: false, // Remove license file with extracted comments
-        }),],
+                extractComments: false, // Remove license file with extracted comments
+            }),
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -96,10 +75,15 @@ const config: Webpack.Configuration = {
         }),
         new CopyPlugin({
             patterns: [
-                { from: Path.join(__dirname, '..', 'assets'), to: Path.join(Config.outPathDev, 'assets') },
-                { from: Path.join(__dirname, '..', 'node_modules/pixi-basis-ktx2/assets/'), to: Path.join(Config.outPathDev, '') },
+                {
+                    from: Path.join(__dirname, '..', 'assets'),
+                    to: Path.join(Config.outPathDev, 'assets'),
+                },
+                {
+                    from: Path.join(__dirname, '..', 'node_modules/pixi-basis-ktx2/assets/'),
+                    to: Path.join(Config.outPathDev, ''),
+                },
             ],
-            
         }),
         new NodePolyfillPlugin(),
         // new CompressionPlugin({

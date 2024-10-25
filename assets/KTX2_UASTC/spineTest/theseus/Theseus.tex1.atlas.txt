@@ -1,4 +1,4 @@
-Theseus.tex1.png
+Theseus.tex1.ktx2
 size:1024,1024
 filter:Linear,Linear
 pma:true
