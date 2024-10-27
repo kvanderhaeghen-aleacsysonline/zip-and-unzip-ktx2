@@ -1,0 +1,7 @@
+bigGlow9Alike.tex1.ktx2
+	size: 256, 256
+	filter: Linear, Linear
+	pma: true
+alike9BigGlow
+	bounds: 2, 8, 171, 165
+	offsets: 42, 50, 256, 256

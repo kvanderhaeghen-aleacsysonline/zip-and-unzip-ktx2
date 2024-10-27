@@ -1,0 +1,7 @@
+bonusTrail.tex1.ktx2
+	size: 128, 128
+	filter: Linear, Linear
+	pma: true
+particleFX
+	bounds: 2, 2, 71, 80
+	offsets: 3, 4, 78, 87

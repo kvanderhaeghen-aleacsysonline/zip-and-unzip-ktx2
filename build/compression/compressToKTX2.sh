@@ -59,102 +59,87 @@ if [ ! -d "$ktx2_directory" ]; then
 fi
 
 # Iterate through files in the specified directory and its subdirectories
-find "$root_directory" -type f | while read -r file; do
-# find $(printf "%s " "${root_directory}/${include_subdirectories[@]/#/$root_directory/}") -type f | while read -r file; do
-
-    # Check if the file contains any of the included subdirectories or is in the root directory
-    if [[ "$file" == "$root_directory/"* ]]; then
-        contains_include_subdirectory=true
-    else
-        contains_include_subdirectory=false
-        for dir in "${include_subdirectories[@]}"; do
-            if [[ "$file" == *"$dir"* ]]; then
-                contains_include_subdirectory=true
+# Changed `find` command to restrict search to included subdirectories only
+for dir in "${include_subdirectories[@]}"; do
+    find "$root_directory/$dir" -type f | while read -r file; do
+    
+        # Check if the file contains any of the excluded subdirectories
+        contains_excluded_subdirectory=false
+        for dir in "${excluded_subdirectories[@]}"; do
+            if [[ "$file" == *"/$dir/"* ]]; then
+                contains_excluded_subdirectory=true
                 break
             fi
         done
-    fi
-    # Skip the file if it doesn't contain any of the included subdirectories
-    if [ $contains_include_subdirectory == false ]; then
-        continue
-    fi
-
-    # Check if the file contains any of the excluded subdirectories
-    contains_excluded_subdirectory=false
-    for dir in "${excluded_subdirectories[@]}"; do
-        if [[ "$file" == *"$dir"* ]]; then
-            contains_excluded_subdirectory=true
-            break
+        # Skip the file if it contains any of the excluded subdirectories
+        if [ $contains_excluded_subdirectory == true ]; then
+            continue
         fi
+
+        # Increment the iteration counter
+        iteration_count="$((iteration_count+1))"
+        echo "File count: $iteration_count"
+        
+        # Full path name of every file with extension
+        echo "File: $file"
+
+        # Full path name of every file without extension
+        file_without_extension="${file%.*}"
+        file_extension="${file##*.}"
+
+        # Root directory
+        # echo "Root directory: $root_directory"
+
+        # Substring of the root directory minus the full path
+        substring="${file#$root_directory}"
+        substring_without_extension="${substring%.*}"
+        dot_file_extension=".${file_extension}"
+        
+        # Extract the directory path from the substring
+        directory_path="$ktx2_directory$(dirname "$substring_without_extension")"
+
+        if [ ! -d "$directory_path" ]; then
+            mkdir -p "$directory_path"
+            echo "Create directory: $directory_path"
+        fi
+        
+        
+        
+        # Check if the file extension does not match the extensions array
+        if [[ ! " ${extensions[@]} " =~ " ${file_extension,,} " ]]; then
+            # Concatenate root directory, "KTX2", and substring
+            new_path="$ktx2_directory$substring_without_extension$suffix$dot_file_extension"
+
+            # Copy the file to the new path if the extension doesn't match
+            cp "$file" "$new_path"
+            echo "Copied file: $new_path"
+
+            # Replace .png with .ktx2 on the first line of the file if the extension doesn't match    
+            if [ "$file_extension" == "txt" ] || [ "$file_extension" == "atlas" ]; then
+                sed -i '1s/.png/.ktx2/' "$new_path"
+                echo "Updated file: $new_path"
+            fi
+        else
+            # Check the file extension and set color format accordingly
+            echo "Encoding to KTX2..."
+            if [ "$file_extension" == "jpeg" ] || [ "$file_extension" == "jpg" ]; then
+                color_format="--format R8G8B8_SRGB"
+            else
+                color_format="--format R8G8B8A8_SRGB"
+            fi
+
+            # Concatenate root directory, "KTX2", and substring
+            new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
+
+            # Run ktx.exe for the current file
+            # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html
+            echo "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
+            "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
+            echo "Created file: $new_path"
+        fi
+
+        echo "------------------------"
     done
-    # Skip the file if it contains any of the excluded subdirectories
-    if [ $contains_excluded_subdirectory == true ]; then
-        continue
-    fi
-
-	# Increment the iteration counter
-	iteration_count="$((iteration_count+1))"
-	echo "File count: $iteration_count"
-	
-    # Full path name of every file with extension
-    echo "File: $file"
-
-    # Full path name of every file without extension
-    file_without_extension="${file%.*}"
-    file_extension="${file##*.}"
-
-    # Root directory
-    # echo "Root directory: $root_directory"
-
-    # Substring of the root directory minus the full path
-    substring="${file#$root_directory}"
-	substring_without_extension="${substring%.*}"
-    dot_file_extension=".${file_extension}"
-	
-	# Extract the directory path from the substring
-    directory_path="$ktx2_directory$(dirname "$substring_without_extension")"
-
-	if [ ! -d "$directory_path" ]; then
-		mkdir -p "$directory_path"
-		echo "Create directory: $directory_path"
-	fi
-	
-	
-	
-	# Check if the file extension does not match the extensions array
-	if [[ ! " ${extensions[@]} " =~ " ${file_extension,,} " ]]; then
-        # Concatenate root directory, "KTX2", and substring
-        new_path="$ktx2_directory$substring_without_extension$suffix$dot_file_extension"
-
-        # Copy the file to the new path if the extension doesn't match
-		cp "$file" "$new_path"
-		echo "Copied file: $new_path"
-
-        # Replace .png with .ktx2 on the first line of the file if the extension doesn't match    
-		if [ "$file_extension" == "txt" ] || [ "$file_extension" == "atlas" ]; then
-			sed -i '1s/.png/.ktx2/' "$new_path"
-			echo "Updated file: $new_path"
-		fi
-	else
-		 # Check the file extension and set color format accordingly
-		echo "Encoding to KTX2..."
-		if [ "$file_extension" == "jpeg" ] || [ "$file_extension" == "jpg" ]; then
-			color_format="--format R8G8B8_SRGB"
-		else
-			color_format="--format R8G8B8A8_SRGB"
-		fi
-
-        # Concatenate root directory, "KTX2", and substring
-        new_path="$ktx2_directory$substring_without_extension$suffix.ktx2"
-
-        # Run ktx.exe for the current file
-        # Info: https://github.khronos.org/KTX-Software/ktxtools/ktx_create.html
-		echo "$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
-		"$script_directory/ktx.exe" create $toktx_params $color_format "$file" "$new_path"
-		echo "Created file: $new_path"
-	fi
-
-    echo "------------------------"
 done
 
 # Calculate and log the elapsed time

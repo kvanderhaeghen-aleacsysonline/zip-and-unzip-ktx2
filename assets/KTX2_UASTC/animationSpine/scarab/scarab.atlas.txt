@@ -1,0 +1,12 @@
+scarab.tex1.ktx2
+	size: 1024, 512
+	filter: Linear, Linear
+	pma: true
+die10Hint
+	bounds: 468, 332, 113, 131
+shadow
+	bounds: 468, 255, 65, 75
+	offsets: 1, 1, 67, 77
+wingCoinburst
+	bounds: 2, 2, 464, 461
+	offsets: 1, 1, 466, 464

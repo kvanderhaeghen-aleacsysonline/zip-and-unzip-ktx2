@@ -1,0 +1,8 @@
+gridSymbols.tex1.ktx2
+size:256,256
+filter:Linear,Linear
+pma:true
+emptySlot
+bounds:2,2,1,1
+side
+bounds:2,5,32,128

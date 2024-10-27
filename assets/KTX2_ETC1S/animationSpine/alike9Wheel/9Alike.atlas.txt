@@ -1,0 +1,91 @@
+9Alike.tex1.ktx2
+	size: 1024, 1024
+	filter: Linear, Linear
+	pma: true
+9AlikeDoorAbove
+	bounds: 2, 711, 531, 309
+9AlikeDoorLeft
+	bounds: 535, 406, 306, 460
+	rotate: 90
+9AlikeDoorRight
+	bounds: 535, 714, 306, 460
+	rotate: 90
+9AlikeWheel
+	bounds: 2, 169, 230, 230
+	offsets: 10, 10, 250, 250
+9AlikeWheelCenter
+	bounds: 794, 248, 156, 156
+	offsets: 47, 47, 250, 250
+9AlikeWheelRing
+	bounds: 312, 165, 242, 239
+	offsets: 3, 2, 250, 250
+Scarab/bodyFlying
+	bounds: 472, 546, 80, 50
+	rotate: 90
+Scarab/buzzzLeft
+	bounds: 472, 408, 51, 44
+Scarab/buzzzRight
+	bounds: 234, 242, 49, 45
+Scarab/headFlying
+	bounds: 234, 203, 42, 37
+Scarab/leftWingFlying
+	bounds: 472, 454, 40, 90
+	offsets: 0, 1, 46, 91
+Scarab/legLeftBackFlying
+	bounds: 997, 906, 16, 29
+Scarab/legLeftFrontFying
+	bounds: 997, 981, 20, 39
+Scarab/legRightBackFlying
+	bounds: 997, 851, 12, 31
+Scarab/legRightFrontFlying
+	bounds: 997, 937, 15, 42
+Scarab/mouthLeftFlying
+	bounds: 997, 826, 10, 12
+	rotate: 90
+Scarab/mouthRightFlying
+	bounds: 997, 817, 16, 7
+Scarab/movementWing
+	bounds: 952, 221, 39, 44
+	rotate: 90
+Scarab/rightWingFlying
+	bounds: 952, 262, 29, 83
+	offsets: 2, 0, 31, 83
+armRight/scarab/bodyScarab
+	bounds: 472, 628, 54, 81
+	offsets: 1, 1, 56, 83
+armRight/scarab/legDownRight
+	bounds: 983, 321, 24, 30
+	offsets: 2, 1, 27, 32
+	rotate: 90
+armRight/scarab/legRightUp
+	bounds: 934, 186, 33, 42
+	offsets: 1, 1, 35, 44
+	rotate: 90
+armRight/scarab/mouthRight
+	bounds: 997, 838, 13, 11
+	offsets: 1, 1, 15, 13
+armRight/scarab/wingRight
+	bounds: 234, 289, 75, 110
+	offsets: 1, 1, 77, 112
+emptyImg
+	bounds: 1019, 1019, 1, 1
+glossFx
+	bounds: 312, 440, 158, 269
+glow
+	bounds: 2, 401, 308, 308
+	offsets: 11, 10, 329, 328
+reflection1
+	bounds: 952, 347, 57, 54
+	offsets: 6, 5, 69, 64
+	rotate: 90
+reflection2
+	bounds: 997, 884, 19, 20
+	offsets: 2, 3, 24, 26
+spinTxt
+	bounds: 794, 179, 138, 67
+stroke
+	bounds: 556, 168, 236, 236
+totalWin9Alike
+	bounds: 312, 420, 92, 18
+white
+	bounds: 406, 406, 32, 32
