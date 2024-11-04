@@ -78,10 +78,13 @@
         "js-to-ts-converter": "^0.18.2",
         "lodash": "^4.17.21",
         "pixi-basis-ktx2": "^0.0.19",
-        "pixi.js": "^7.x.x",
+        "pixi.js": "^7.4.2",
         "stats.js": "^0.17.0",
         "three": "^0.148.0",
         "zstddec": "^0.0.2"
+    },
+    "resolutions": {
+        "pixi.js": "7.4.2"
     },
     "browser": {
         "fs": false
